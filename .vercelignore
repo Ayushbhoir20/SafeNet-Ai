@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Testing and notebooks
+backend/notebooks/
+*.ipynb
+
+# Logs
+*.log
+logs/
+
+# Local environment
+.env.local
+.env.*.local
+
+# Documentation (optional - include if you want docs in deployment)
+*.md
+!README.md
+
+# Deployment configs for other platforms
+render.yaml
+railway.json
+Procfile
+
+# Frontend remnants
+frontend/
+
+# Dataset (if large, train model before deployment)
+# backend/dataset/
+
+# Sample reports (optional)
+backend/sample_report.docx
+backend/sample_report.pdf

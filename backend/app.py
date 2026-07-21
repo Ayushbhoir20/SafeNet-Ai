@@ -71,11 +71,11 @@ if not mongodb_available or users_collection is None:
     import sys
     sys.exit(1)
 
-# Initialize Flask app with correct paths for reorganized structure
+# Initialize Flask app with templates and static in backend folder
 import os as os_module
 base_dir = os_module.path.dirname(os_module.path.abspath(__file__))
-template_dir = os_module.path.join(os_module.path.dirname(base_dir), 'frontend', 'templates')
-static_dir = os_module.path.join(os_module.path.dirname(base_dir), 'frontend', 'static')
+template_dir = os_module.path.join(base_dir, 'templates')
+static_dir = os_module.path.join(base_dir, 'static')
 
 app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
 app.secret_key = 'your-secret-key-change-this-in-production-12345'  # Change this in production!
