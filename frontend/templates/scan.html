@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="AI-powered phishing detection system using machine learning to identify malicious URLs in real-time.">
+    <title>Phishing Detection System | AI-Powered URL Security</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Favicons (multiple formats for browser compatibility) -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='favicon.png') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='favicon.png') }}">
+
+
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <!-- Left Section: Brand -->
+            <div class="nav-left">
+                <div class="nav-brand">
+                    <i class="fas fa-shield-halved"></i>
+                    <span>SafeNet AI</span>
+                    {% if user_plan and user_plan != 'free' %}
+                    {% if user_plan == 'basic' %}
+                    <span class="plan-badge basic">BASIC</span>
+                    {% elif user_plan == 'pro' %}
+                    <span class="plan-badge pro">PRO</span>
+                    {% elif user_plan == 'pro_plus' %}
+                    <span class="plan-badge pro-plus">PRO+</span>
+                    {% elif user_plan == 'enterprise' %}
+                    <span class="plan-badge enterprise">ENTERPRISE</span>
+                    {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Center Section: Menu Links -->
+            <div class="nav-center">
+                <ul class="nav-menu">
+                    <li><a href="/" class="nav-link">Home</a></li>
+                    <li><a href="/dashboard" class="nav-link">Dashboard</a></li>
+                    <li><a href="/scan" class="nav-link active">Scan</a></li>
+                </ul>
+            </div>
+
+            <!-- Right Section: Actions -->
+            <div class="nav-right">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="logo-container">
+                <i class="fas fa-shield-halved logo-icon"></i>
+            </div>
+            <h1 class="title">Phishing Detection System</h1>
+            <p class="subtitle">AI-Powered URL Security Analysis</p>
+            <div class="badge-container">
+                <span class="badge">
+                    <i class="fas fa-brain"></i> Machine Learning
+                </span>
+                <span class="badge">
+                    <i class="fas fa-bolt"></i> Real-time Analysis
+                </span>
+            </div>
+        </header>
+
+        <!-- Main Card -->
+        <div class="card">
+            <div class="card-header">
+                <h2>Check URL Safety</h2>
+                <p>Enter any URL to analyze if it's a phishing website or legitimate</p>
+            </div>
+
+            <!-- URL Input Form -->
+            <form id="urlForm" class="url-form">
+                <div class="input-group">
+                    <i class="fas fa-link input-icon"></i>
+                    <input type="text" id="urlInput" class="url-input"
+                        placeholder="Enter URL (e.g., https://example.com)" required>
+                </div>
+
+                <button type="submit" class="btn-primary" id="checkBtn">
+                    <span class="btn-text">Analyze URL</span>
+                    <i class="fas fa-arrow-right btn-icon"></i>
+                </button>
+            </form>
+
+            <!-- Loading Spinner -->
+            <div class="loader-container" id="loader">
+                <div class="loader"></div>
+                <p class="loader-text">Analyzing URL...</p>
+            </div>
+
+            <!-- Result Container -->
+            <div class="result-container" id="resultContainer">
+                <!-- Result will be dynamically inserted here -->
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- Notification Styles -->
+    <style>
+        /* Notification Bell */
+        .notification-wrapper {
+            position: relative;
+        }
+
+        .notification-bell {
+            position: relative;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .notification-bell:hover {
+            background: var(--hover-bg);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #ef4444;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.15rem 0.4rem;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        /* Notification Dropdown */
+        .notification-dropdown {
+            position: absolute;
+            top: calc(100% + 0.5rem);
+            right: 0;
+            width: 380px;
+            max-height: 500px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .notification-dropdown.active {
+            display: flex;
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .notification-header h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .mark-all-read {
+            background: none;
+            border: none;
+            color: #6366f1;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .mark-all-read:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .notification-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .notification-item:hover {
+            background: var(--hover-bg);
+        }
+
+        .notification-item.unread {
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .notification-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .notification-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .notification-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .notification-message {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .notification-reply {
+            padding: 0.75rem;
+            background: rgba(99, 102, 241, 0.1);
+            border-left: 3px solid #6366f1;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        .notification-reply-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #6366f1;
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-empty {
+            padding: 3rem 1rem;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .notification-empty i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .notification-empty p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+    </style>
+
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+    <!-- Notification JavaScript -->
+    <script>
+        // Notification System
+        let notificationDropdownOpen = false;
+
+        // Fetch notification count
+        async function fetchNotificationCount() {
+            try {
+                const response = await fetch('/api/notifications/count');
+                const data = await response.json();
+
+                if (data.success && data.unread_count > 0) {
+                    document.getElementById('notificationBadge').textContent = data.unread_count;
+                    document.getElementById('notificationBadge').style.display = 'block';
+                } else {
+                    document.getElementById('notificationBadge').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error fetching notification count:', error);
+            }
+        }
+
+        // Fetch notifications
+        async function fetchNotifications() {
+            try {
+                const response = await fetch('/api/notifications');
+                const data = await response.json();
+
+                const notificationList = document.getElementById('notificationList');
+
+                if (data.success && data.notifications.length > 0) {
+                    notificationList.innerHTML = data.notifications.map(notif => `
+                        <div class="notification-item ${!notif.read ? 'unread' : ''}">
+                            <div class="notification-item-header">
+                                <span class="notification-title">Reply from ${notif.replied_by}</span>
+                                <span class="notification-time">${notif.replied_at}</span>
+                            </div>
+                            <div class="notification-message">
+                                <strong>Your message:</strong> ${notif.message.substring(0, 100)}${notif.message.length > 100 ? '...' : ''}
+                            </div>
+                            <div class="notification-reply">
+                                <div class="notification-reply-label">Admin Reply:</div>
+                                ${notif.admin_reply}
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    notificationList.innerHTML = `
+                        <div class="notification-empty">
+                            <i class="fas fa-bell-slash"></i>
+                            <p>No notifications</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error fetching notifications:', error);
+            }
+        }
+
+        // Toggle notification dropdown
+        document.getElementById('notificationBell').addEventListener('click', async () => {
+            const dropdown = document.getElementById('notificationDropdown');
+            notificationDropdownOpen = !notificationDropdownOpen;
+
+            if (notificationDropdownOpen) {
+                dropdown.classList.add('active');
+                await fetchNotifications();
+            } else {
+                dropdown.classList.remove('active');
+            }
+        });
+
+        // Mark all as read
+        document.getElementById('markAllRead').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/notifications/mark-read', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update UI
+                    document.querySelectorAll('.notification-item').forEach(item => {
+                        item.classList.remove('unread');
+                    });
+                    document.getElementById('notificationBadge').style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error marking notifications as read:', error);
+            }
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const wrapper = document.querySelector('.notification-wrapper');
+            if (wrapper && !wrapper.contains(e.target) && notificationDropdownOpen) {
+                document.getElementById('notificationDropdown').classList.remove('active');
+                notificationDropdownOpen = false;
+            }
+        });
+
+        // Fetch notification count on page load
+        fetchNotificationCount();
+
+        // Poll for new notifications every 30 seconds
+        setInterval(fetchNotificationCount, 30000);
+    </script>
+
+    <!-- ============================================
+         CYBERSECURITY CHATBOT
+         ============================================ -->
+
+    <!-- Chatbot Floating Icon -->
+    <div class="chatbot-icon" id="chatbotIcon">
+        <i class="fas fa-shield-halved"></i>
+    </div>
+
+    <!-- Chatbot Window -->
+    <div class="chatbot-window" id="chatbotWindow">
+        <!-- Header -->
+        <div class="chatbot-header">
+            <div class="chatbot-header-left">
+                <div class="chatbot-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="chatbot-title">
+                    <h3>Security Assistant</h3>
+                    <p class="chatbot-status">
+                        <span class="chatbot-status-dot"></span>
+                        Online
+                    </p>
+                </div>
+            </div>
+            <button class="chatbot-close" id="chatbotClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Messages Area -->
+        <div class="chatbot-messages" id="chatbotMessages">
+            <!-- Messages will be dynamically inserted here -->
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator" id="typingIndicator">
+            <div class="typing-dots">
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="chatbot-input-area">
+            <div class="chatbot-input-wrapper">
+                <input type="text" class="chatbot-input" id="chatbotInput" placeholder="Ask me about cybersecurity..."
+                    autocomplete="off">
+                <button class="chatbot-send-btn" id="chatbotSendBtn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chatbot JavaScript -->
+    <script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+
+    <!-- Global Keyboard Shortcuts -->
+    <script src="{{ url_for('static', filename='js/global-shortcuts.js') }}"></script>
+
+</body>
+
+</html>

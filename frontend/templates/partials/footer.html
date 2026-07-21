@@ -1,0 +1,85 @@
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-container">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <i class="fas fa-shield-halved"></i>
+                <span>SafeNet AI</span>
+            </div>
+            <p class="footer-tagline">AI-Powered Phishing Detection System</p>
+
+            <!-- Technology Stack -->
+            <div class="footer-tech-stack">
+                <a href="https://en.wikipedia.org/wiki/Python_(programming_language)" target="_blank"
+                    rel="noopener noreferrer" title="Learn about Python">
+                    <span><i class="fab fa-python"></i> Python</span>
+                </a>
+                <a href="https://en.wikipedia.org/wiki/Flask_(web_framework)" target="_blank" rel="noopener noreferrer"
+                    title="Learn about Flask">
+                    <span><i class="fas fa-flask"></i> Flask</span>
+                </a>
+                <a href="https://en.wikipedia.org/wiki/Machine_learning" target="_blank" rel="noopener noreferrer"
+                    title="Learn about Machine Learning">
+                    <span><i class="fas fa-brain"></i> Machine Learning</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="footer-links">
+            <div class="footer-column">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="/#features">Features</a></li>
+                    <li><a href="/#how-it-works">How It Works</a></li>
+                    <li><a href="/#about">About</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                    {% if not is_logged_in %}
+                    <li><a href="/login">Login</a></li>
+                    <li><a href="/register">Sign Up</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h4>Legal &amp; Support</h4>
+                <ul>
+                    <li><a href="/terms">Terms &amp; Conditions</a></li>
+                    <li><a href="/privacy">Privacy Policy</a></li>
+                    <li><a href="/faq">FAQ</a></li>
+                    <li><a href="/disclaimer">Disclaimer</a></li>
+                </ul>
+            </div>
+
+            <!-- Newsletter Subscription -->
+            <div class="footer-newsletter">
+                <h4>Subscribe to our newsletter</h4>
+                <p class="footer-newsletter-subtitle">Stay ahead of cyber threats &mdash; get the latest security news and updates delivered straight to your inbox.</p>
+
+                <form class="footer-newsletter-form" onsubmit="handleNewsletterSubmit(event)">
+                    <input type="email" class="footer-newsletter-input" placeholder="Enter your email" required>
+                    <button type="submit" class="footer-newsletter-btn">Subscribe</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+        <div class="footer-container footer-container-centered">
+            <div class="footer-social-icons">
+                <a href="https://www.linkedin.com/in/ayush-bhoir-41318139b" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="LinkedIn" title="LinkedIn">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+                <a href="https://x.com/ayushbhoir10" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="X (Twitter)" title="X (Twitter)">
+                    <i class="fab fa-x-twitter"></i>
+                </a>
+                <a href="https://www.youtube.com/@SafeNetAI-u4q" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="YouTube" title="YouTube">
+                    <i class="fab fa-youtube"></i>
+                </a>
+                <a href="https://www.instagram.com/safenetai" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="Instagram" title="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+            <p>&copy; 2026 SafeNet AI. All rights reserved.</p>
+        </div>
+    </div>
+</footer>

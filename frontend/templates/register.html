@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sign up for the AI-powered phishing detection system.">
+    <title>Sign Up | SafeNet AI</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Favicons (multiple formats for browser compatibility) -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='favicon.png') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='favicon.png') }}">
+
+
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Sign Up Container -->
+    <div class="login-container">
+        <div class="login-card">
+            <!-- Logo and Header -->
+            <div class="login-header">
+                <div class="logo-container">
+                    <i class="fas fa-shield-halved logo-icon"></i>
+                </div>
+                <h1 class="login-title">Create Account</h1>
+                <p class="login-subtitle">Sign up to access the SafeNet AI</p>
+            </div>
+
+            <!-- Sign Up Form -->
+            <form id="registerForm" class="login-form">
+                <!-- Success Message -->
+                <div class="success-message" id="successMessage" style="display: none;">
+                    <i class="fas fa-check-circle"></i>
+                    <span id="successText"></span>
+                </div>
+
+                <!-- Error Message -->
+                <div class="error-message" id="errorMessage" style="display: none;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="errorText"></span>
+                </div>
+
+                <!-- Email Field -->
+                <div class="input-group">
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" id="email" class="url-input" placeholder="Email Address" required
+                        autocomplete="email">
+                </div>
+
+                <!-- Password Field -->
+                <div class="input-group">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="password" class="url-input" placeholder="Password" required
+                        autocomplete="new-password">
+                    <button type="button" class="password-toggle" id="passwordToggle"
+                        aria-label="Toggle password visibility">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+
+                <!-- Confirm Password Field -->
+                <div class="input-group">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" id="confirmPassword" class="url-input" placeholder="Confirm Password"
+                        required autocomplete="new-password">
+                    <button type="button" class="password-toggle" id="confirmPasswordToggle"
+                        aria-label="Toggle password visibility">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+
+                <!-- Sign Up Button -->
+                <button type="submit" class="btn-primary" id="registerSubmitBtn">
+                    <span class="btn-text">Create Account</span>
+                    <i class="fas fa-user-plus btn-icon"></i>
+                </button>
+
+                <!-- Sign In Link -->
+                <p class="login-register-link">
+                    Have an account? <a href="/login">Sign In</a>
+                </p>
+            </form>
+        </div>
+
+        <!-- Secure Access Text -->
+        <p class="login-secure-text">🛡️ Secure access powered by SafeNet AI</p>
+    </div>
+
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/register.js') }}"></script>
+
+    <!-- Global Keyboard Shortcuts -->
+    <script src="{{ url_for('static', filename='js/global-shortcuts.js') }}"></script>
+</body>
+
+</html>

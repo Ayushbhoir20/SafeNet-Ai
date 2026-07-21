@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - SafeNet AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+
+<body>
+    <!-- Admin Sidebar -->
+    <aside class="admin-sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-shield-halved"></i>
+            <span>SafeNet AI</span>
+        </div>
+        <div class="sidebar-badge">Admin Panel</div>
+
+        <nav class="sidebar-nav">
+            <a href="/admin/dashboard" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/admin/sales" class="nav-item">
+                <i class="fas fa-money-bill-trend-up"></i>
+                <span>Sales & Revenue</span>
+            </a>
+            <a href="/admin/messages" class="nav-item">
+                <i class="fas fa-envelope"></i>
+                <span>Messages</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="admin-info">
+                <i class="fas fa-user-shield"></i>
+                <span>{{ admin_email }}</span>
+            </div>
+            <a href="/logout" class="logout-link">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+        <header class="admin-header">
+            <div class="header-left">
+                <h1><i class="fas fa-users"></i> User Management</h1>
+                <p>View all registered users and their activity</p>
+            </div>
+            <div class="header-right">
+                <a href="/admin/dashboard" class="btn-back">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </header>
+
+        <!-- Users Table -->
+        <section class="admin-card">
+            <div class="card-header">
+                <h2><i class="fas fa-users-cog"></i> Registered Users</h2>
+                <span class="badge">{{ users|length }} Total</span>
+            </div>
+            <div class="threat-table-wrapper">
+                <table class="threat-table">
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Plan</th>
+                            <th>Last Scan</th>
+                            <th>Joined</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if users %}
+                        {% for user in users %}
+                        <tr class="user-row-clickable" data-user-email="{{ user.email }}"
+                            data-user-plan="{{ user.plan if user.plan else 'Free' }}"
+                            data-user-credits="{{ user.credits_remaining if user.credits_remaining is defined else 0 }}"
+                            data-user-total-credits="{{ user.total_credits if user.total_credits is defined else 10 }}"
+                            data-user-scans="{{ user.total_scans }}" data-user-last-scan="{{ user.last_scan }}"
+                            data-user-joined="{{ user.created_at_str if user.created_at_str else 'Unknown' }}"
+                            data-user-id="{{ user._id }}"
+                            data-user-subscription-status="{{ user.subscription_status if user.subscription_status else 'active' }}"
+                            data-user-subscription-end="{{ user.subscription_end_date if user.subscription_end_date else 'N/A' }}"
+                            data-user-plans-purchased="{{ user.total_plans_purchased if user.total_plans_purchased is defined else 0 }}">
+                            <td class="user-cell">
+                                <i class="fas fa-user-circle"></i>
+                                {{ user.email }}
+                            </td>
+                            <td>
+                                <span class="plan-badge {{ user.plan|lower if user.plan else 'free' }}">
+                                    {{ user.plan if user.plan else 'Free' }}
+                                </span>
+                            </td>
+                            <td class="date-cell">{{ user.last_scan }}</td>
+                            <td class="date-cell">{{ user.created_at_str if user.created_at_str else 'Unknown' }}</td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="empty-cell">
+                                <div class="empty-message">
+                                    <i class="fas fa-inbox"></i>
+                                    <p>No users registered yet</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- User Details Modal -->
+    <div class="modal-overlay" id="userDetailsModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2><i class="fas fa-user-circle"></i> User Details</h2>
+                <button class="modal-close" id="closeUserModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- User Info Section -->
+                <div class="modal-section">
+                    <h3><i class="fas fa-envelope"></i> Account Information</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Email:</span>
+                            <span class="info-value" id="modalUserEmail">-</span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Joined:</span>
+                            <span class="info-value" id="modalUserJoined">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Plan & Subscription Section -->
+                <div class="modal-section">
+                    <h3><i class="fas fa-crown"></i> Subscription Details</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Current Plan:</span>
+                            <span class="info-value">
+                                <span class="plan-badge-large" id="modalUserPlan">Free</span>
+                            </span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Total Plans Purchased:</span>
+                            <span class="info-value highlight" id="modalPlansPurchased">0</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Subscription End:</span>
+                            <span class="info-value" id="modalSubscriptionEnd">N/A</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Credits Section -->
+                <div class="modal-section">
+                    <h3><i class="fas fa-coins"></i> Credits Information</h3>
+                    <div class="credits-display">
+                        <div class="credit-stat">
+                            <div class="credit-label">Remaining Credits</div>
+                            <div class="credit-value" id="modalCreditsRemaining">0</div>
+                        </div>
+                        <div class="credit-divider">/</div>
+                        <div class="credit-stat">
+                            <div class="credit-label">Total Credits</div>
+                            <div class="credit-value" id="modalTotalCredits">10</div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Activity Section -->
+                <div class="modal-section">
+                    <h3><i class="fas fa-chart-line"></i> Activity Summary</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Total Scans:</span>
+                            <span class="info-value highlight" id="modalTotalScans">0</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Last Scan:</span>
+                            <span class="info-value" id="modalLastScan">Never</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info-color);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-back:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: var(--info-color);
+            transform: translateX(-3px);
+        }
+
+        .plan-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .plan-badge.free {
+            background: rgba(156, 163, 175, 0.2);
+            color: #9ca3af;
+            border: 1px solid rgba(156, 163, 175, 0.3);
+        }
+
+        .plan-badge.basic {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .plan-badge.pro {
+            background: rgba(168, 85, 247, 0.2);
+            color: #a855f7;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+
+        .plan-badge.pro-plus,
+        .plan-badge.pro_plus {
+            background: rgba(236, 72, 153, 0.2);
+            color: #ec4899;
+            border: 1px solid rgba(236, 72, 153, 0.3);
+        }
+
+        .plan-badge.custom,
+        .plan-badge.enterprise {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .credits-cell {
+            font-family: 'Courier New', monospace;
+            color: var(--info-color);
+            font-weight: 600;
+        }
+
+        .scans-cell {
+            text-align: center;
+        }
+
+        .scan-count {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info-color);
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-cell i {
+            color: var(--info-color);
+            font-size: 1.1rem;
+        }
+
+        /* Clickable User Rows */
+        .user-row-clickable {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .user-row-clickable:hover {
+            background: rgba(59, 130, 246, 0.05) !important;
+            transform: translateX(3px);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-container {
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 85vh;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            transform: scale(0.95) translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-container {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .modal-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #f8fafc;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .modal-header h2 i {
+            color: #3b82f6;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+
+        .modal-body {
+            padding: 2rem;
+            max-height: calc(85vh - 100px);
+            overflow-y: auto;
+        }
+
+        .modal-section {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .modal-section:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .modal-section h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-section h3 i {
+            color: #3b82f6;
+            font-size: 0.9rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .info-label {
+            font-size: 0.8125rem;
+            color: #64748b;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .info-value {
+            font-size: 0.9375rem;
+            color: #f8fafc;
+            font-weight: 500;
+        }
+
+        .info-value.mono {
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }
+
+        .info-value.highlight {
+            color: #3b82f6;
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+
+        /* Plan Badge Large */
+        .plan-badge-large {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .plan-badge-large.free,
+        #modalUserPlan.free {
+            background: rgba(156, 163, 175, 0.2);
+            color: #9ca3af;
+            border: 1px solid rgba(156, 163, 175, 0.3);
+        }
+
+        .plan-badge-large.basic,
+        #modalUserPlan.basic {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .plan-badge-large.pro,
+        #modalUserPlan.pro {
+            background: rgba(168, 85, 247, 0.2);
+            color: #a855f7;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+
+        .plan-badge-large.pro-plus,
+        .plan-badge-large.pro_plus,
+        #modalUserPlan.pro-plus,
+        #modalUserPlan.pro_plus {
+            background: rgba(236, 72, 153, 0.2);
+            color: #ec4899;
+            border: 1px solid rgba(236, 72, 153, 0.3);
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            padding: 0.375rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-badge.active,
+        #modalSubscriptionStatus.active {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .status-badge.cancelled,
+        #modalSubscriptionStatus.cancelled {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .status-badge.expired,
+        #modalSubscriptionStatus.expired {
+            background: rgba(251, 191, 36, 0.1);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+        }
+
+        /* Credits Display */
+        .credits-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .credit-stat {
+            text-align: center;
+        }
+
+        .credit-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .credit-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #3b82f6;
+            font-family: 'Courier New', monospace;
+        }
+
+        .credit-divider {
+            font-size: 2rem;
+            color: #475569;
+            font-weight: 300;
+        }
+
+        .credit-progress {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+    </style>
+
+    <script>
+        // User Details Modal
+        const userDetailsModal = document.getElementById('userDetailsModal');
+        const closeUserModal = document.getElementById('closeUserModal');
+        const userRows = document.querySelectorAll('.user-row-clickable');
+
+        // Open modal when clicking on a user row
+        userRows.forEach(row => {
+            row.addEventListener('click', function () {
+                const email = this.dataset.userEmail;
+                const plan = this.dataset.userPlan;
+                const credits = this.dataset.userCredits;
+                const totalCredits = this.dataset.userTotalCredits;
+                const scans = this.dataset.userScans;
+                const lastScan = this.dataset.userLastScan;
+                const joined = this.dataset.userJoined;
+                const userId = this.dataset.userId;
+                const subscriptionStatus = this.dataset.userSubscriptionStatus;
+                const subscriptionEnd = this.dataset.userSubscriptionEnd;
+                const plansPurchased = this.dataset.userPlansPurchased;
+
+                // Populate modal
+                document.getElementById('modalUserEmail').textContent = email;
+                document.getElementById('modalUserJoined').textContent = joined;
+
+                const planBadge = document.getElementById('modalUserPlan');
+                planBadge.textContent = plan;
+                planBadge.className = 'plan-badge-large ' + plan.toLowerCase().replace(' ', '-');
+
+
+
+                document.getElementById('modalSubscriptionEnd').textContent = subscriptionEnd;
+                document.getElementById('modalPlansPurchased').textContent = plansPurchased;
+                document.getElementById('modalCreditsRemaining').textContent = credits;
+                document.getElementById('modalTotalCredits').textContent = totalCredits;
+                document.getElementById('modalTotalScans').textContent = scans;
+                document.getElementById('modalLastScan').textContent = lastScan;
+
+
+
+                // Show modal
+                userDetailsModal.classList.add('active');
+            });
+        });
+
+        // Close modal
+        closeUserModal.addEventListener('click', function () {
+            userDetailsModal.classList.remove('active');
+        });
+
+        // Close modal when clicking outside
+        userDetailsModal.addEventListener('click', function (e) {
+            if (e.target === userDetailsModal) {
+                userDetailsModal.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+
+</html>

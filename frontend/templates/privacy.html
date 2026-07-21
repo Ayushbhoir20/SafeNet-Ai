@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SafeNet AI Privacy Policy - How we collect, use, and protect your data.">
+    <title>Privacy Policy | SafeNet AI</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Favicons (multiple formats for browser compatibility) -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='favicon.png') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='favicon.png') }}">
+
+
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/legal.css') }}">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <!-- Left Section: Brand -->
+            <div class="nav-left">
+                <div class="nav-brand">
+                    <i class="fas fa-shield-halved"></i>
+                    <span>SafeNet AI</span>
+                </div>
+            </div>
+
+            <!-- Center Section: Menu Links -->
+            <div class="nav-center">
+                <ul class="nav-menu">
+                    <li><a href="/" class="nav-link">Home</a></li>
+                    {% if is_logged_in %}
+                    <li><a href="/dashboard" class="nav-link">Dashboard</a></li>
+                    <li><a href="/scan" class="nav-link">Scan</a></li>
+                    {% endif %}
+                    <li><a href="/#features" class="nav-link">Features</a></li>
+                    <li><a href="/#how-it-works" class="nav-link">How It Works</a></li>
+                    <li><a href="/#about" class="nav-link">About</a></li>
+                </ul>
+            </div>
+
+            <!-- Right Section: Actions -->
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                {% if is_logged_in %}
+                <a href="/logout" class="logout-btn" aria-label="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+                {% else %}
+                <a href="/login" class="logout-btn" aria-label="Login">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Login</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Legal Page Content -->
+    <div class="legal-page">
+        <div class="legal-container">
+            <!-- Header -->
+            <div class="legal-header">
+                <h1 class="legal-title">Privacy Policy</h1>
+                <p class="legal-subtitle">Your privacy and data security are our priority</p>
+                <p class="legal-date">Last Updated: January 2026</p>
+            </div>
+
+            <!-- Content -->
+            <div class="legal-content">
+                <!-- Section 1 -->
+                <div class="legal-section">
+                    <h2>1. Introduction</h2>
+                    <p>
+                        SafeNet AI ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy
+                        explains how we collect, use, disclose, and safeguard your information when you use our
+                        AI-powered phishing detection service.
+                    </p>
+                    <div class="legal-highlight">
+                        <p>
+                            <strong>Key Principle:</strong> We collect minimal data necessary for service operation and
+                            security analysis. We do not track personal identity or sell user data to third parties.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Section 2 -->
+                <div class="legal-section">
+                    <h2>2. Information We Collect</h2>
+
+                    <h3>2.1 URLs Submitted for Analysis</h3>
+                    <p>
+                        When you use SafeNet AI to scan a URL, we collect and analyze:
+                    </p>
+                    <ul>
+                        <li>The URL string you submit</li>
+                        <li>Extracted features (domain characteristics, URL patterns, etc.)</li>
+                        <li>WHOIS metadata (domain age, registration info)</li>
+                        <li>Detection results and confidence scores</li>
+                        <li>Timestamp of the scan</li>
+                    </ul>
+
+                    <h3>2.2 Account Information (If Registered)</h3>
+                    <p>
+                        If you create an account, we collect:
+                    </p>
+                    <ul>
+                        <li>Email address (for authentication)</li>
+                        <li>Hashed password (we never store plain-text passwords)</li>
+                        <li>Account creation date</li>
+                        <li>Last login timestamp</li>
+                    </ul>
+
+                    <h3>2.3 Technical Information</h3>
+                    <p>
+                        We automatically collect certain technical information:
+                    </p>
+                    <ul>
+                        <li>IP address (for security and abuse prevention)</li>
+                        <li>Browser type and version</li>
+                        <li>Device information</li>
+                        <li>Session data</li>
+                    </ul>
+
+                    <div class="legal-highlight">
+                        <p>
+                            <strong>Important:</strong> We do NOT collect browsing history, personal identification
+                            documents, financial information, or any data beyond what is necessary for phishing
+                            detection.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Section 3 -->
+                <div class="legal-section">
+                    <h2>3. How We Use Your Data</h2>
+                    <p>
+                        We use collected information for the following purposes:
+                    </p>
+                    <ul>
+                        <li><strong>Phishing Detection:</strong> Analyzing URLs to identify potential phishing threats
+                        </li>
+                        <li><strong>Service Improvement:</strong> Enhancing ML models and detection accuracy</li>
+                        <li><strong>Security:</strong> Preventing abuse, fraud, and malicious activity</li>
+                        <li><strong>User Dashboard:</strong> Displaying scan history and statistics to registered users
+                        </li>
+                        <li><strong>Research:</strong> Aggregated, anonymized data for academic research (no personal
+                            identification)</li>
+                    </ul>
+                </div>
+
+                <!-- Section 4 -->
+                <div class="legal-section">
+                    <h2>4. Data Storage & Security</h2>
+
+                    <h3>4.1 Storage</h3>
+                    <p>
+                        Your data is stored in:
+                    </p>
+                    <ul>
+                        <li>MongoDB database (for user accounts and scan history)</li>
+                        <li>Secure servers with encryption at rest</li>
+                        <li>Data retention: Scan history is retained for account holders; guest scans are not
+                            permanently stored</li>
+                    </ul>
+
+                    <h3>4.2 Security Measures</h3>
+                    <p>
+                        We implement industry-standard security practices:
+                    </p>
+                    <ul>
+                        <li>Password hashing using bcrypt</li>
+                        <li>HTTPS encryption for data in transit</li>
+                        <li>Access controls and authentication</li>
+                        <li>Regular security audits</li>
+                    </ul>
+
+                    <div class="legal-highlight">
+                        <p>
+                            While we take reasonable measures to protect your data, no system is 100% secure. You
+                            acknowledge that you provide information at your own risk.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Section 5 -->
+                <div class="legal-section">
+                    <h2>5. Data Sharing & Disclosure</h2>
+
+                    <h3>5.1 We Do NOT Sell Your Data</h3>
+                    <p>
+                        SafeNet AI does not sell, rent, or trade your personal information to third parties for
+                        marketing purposes.
+                    </p>
+
+                    <h3>5.2 Limited Sharing</h3>
+                    <p>
+                        We may share data only in the following circumstances:
+                    </p>
+                    <ul>
+                        <li><strong>Legal Requirements:</strong> If required by law, court order, or government request
+                        </li>
+                        <li><strong>Security Threats:</strong> To prevent fraud, abuse, or security threats</li>
+                        <li><strong>Aggregated Data:</strong> Anonymized, non-identifiable statistics for research</li>
+                    </ul>
+                </div>
+
+                <!-- Section 6 -->
+                <div class="legal-section">
+                    <h2>6. Cookies & Tracking</h2>
+                    <p>
+                        SafeNet AI uses minimal cookies for:
+                    </p>
+                    <ul>
+                        <li><strong>Session Management:</strong> Keeping you logged in</li>
+                        <li><strong>Theme Preference:</strong> Remembering dark/light mode selection</li>
+                    </ul>
+                    <p>
+                        We do NOT use third-party tracking cookies or advertising cookies.
+                    </p>
+                </div>
+
+                <!-- Section 7 -->
+                <div class="legal-section">
+                    <h2>7. Your Rights</h2>
+                    <p>
+                        You have the right to:
+                    </p>
+                    <ul>
+                        <li><strong>Access:</strong> Request a copy of your data</li>
+                        <li><strong>Correction:</strong> Update or correct inaccurate information</li>
+                        <li><strong>Deletion:</strong> Request deletion of your account and associated data</li>
+                        <li><strong>Opt-Out:</strong> Stop using the service at any time</li>
+                    </ul>
+                    <p>
+                        To exercise these rights, contact us at <a
+                            href="mailto:privacy@safenetai.com">privacy@safenetai.com</a>.
+                    </p>
+                </div>
+
+                <!-- Section 8 -->
+                <div class="legal-section">
+                    <h2>8. Children's Privacy</h2>
+                    <p>
+                        SafeNet AI is not intended for users under the age of 13. We do not knowingly collect personal
+                        information from children. If you believe we have collected data from a child, please contact us
+                        immediately.
+                    </p>
+                </div>
+
+                <!-- Section 9 -->
+                <div class="legal-section">
+                    <h2>9. Changes to This Policy</h2>
+                    <p>
+                        We may update this Privacy Policy periodically. Changes will be posted on this page with an
+                        updated "Last Updated" date. Continued use of SafeNet AI after changes constitutes acceptance of
+                        the updated policy.
+                    </p>
+                </div>
+
+                <!-- Section 10 -->
+                <div class="legal-section">
+                    <h2>10. International Users</h2>
+                    <p>
+                        SafeNet AI is operated from [Your Location]. If you access the service from outside this region,
+                        your data may be transferred to and processed in our servers. By using SafeNet AI, you consent
+                        to this transfer.
+                    </p>
+                </div>
+
+                <!-- Contact -->
+                <div class="legal-contact">
+                    <h3>Privacy Questions or Concerns?</h3>
+                    <p>If you have questions about this Privacy Policy or how we handle your data:</p>
+                    <p><a href="mailto:privacy@safenetai.com">privacy@safenetai.com</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    {% include 'partials/footer.html' %}
+
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/legal.js') }}"></script>
+</body>
+
+</html>

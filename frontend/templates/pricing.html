@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="SafeNet AI Pricing Plans - Choose the perfect plan for your phishing detection needs.">
+    <title>Pricing | SafeNet AI</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Favicons (multiple formats for browser compatibility) -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='favicon.png') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='favicon.png') }}">
+
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <!-- Left Section: Brand -->
+            <div class="nav-left">
+                <div class="nav-brand">
+                    <i class="fas fa-shield-halved"></i>
+                    <span>SafeNet AI</span>
+                </div>
+            </div>
+
+            <!-- Center Section: Menu Links -->
+            <div class="nav-center">
+                <ul class="nav-menu">
+                    <li><a href="/" class="nav-link">Home</a></li>
+                    {% if is_logged_in %}
+                    <li><a href="/dashboard" class="nav-link">Dashboard</a></li>
+                    <li><a href="/scan" class="nav-link">Scan</a></li>
+                    {% endif %}
+                    <li><a href="/pricing" class="nav-link active">Pricing</a></li>
+                    <li><a href="/contact" class="nav-link">Contact</a></li>
+                </ul>
+            </div>
+
+            <!-- Right Section: Actions -->
+            <div class="nav-right">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+
+                {% if is_logged_in and user %}
+                <!-- Credits Indicator (FROM DATABASE) -->
+                <div class="credits-indicator">
+                    <i class="fas fa-coins"></i>
+                    <span id="creditsDisplay">
+                        {% if user.credits_remaining == -1 %}
+                        ∞
+                        {% else %}
+                        {{ user.credits_remaining }}
+                        {% endif %}
+                    </span>
+                </div>
+
+                <a href="/logout" class="logout-btn" aria-label="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+                {% else %}
+                <a href="/login" class="logout-btn" aria-label="Login">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Login</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Animated Background -->
+    <div id="tsparticles"></div>
+
+    <!-- Pricing Section -->
+    <section class="pricing-section">
+        <div class="pricing-container">
+            <!-- Header -->
+            <div class="pricing-header">
+                <div class="hero-label">
+                    <i class="fas fa-tag"></i>
+                    <span>Flexible Pricing</span>
+                </div>
+                <h1 class="section-heading">Choose Your Plan</h1>
+                <p class="section-subtitle">Select the perfect plan for your phishing detection needs. All plans include
+                    our advanced AI-powered detection.</p>
+            </div>
+
+            <!-- Pricing Cards Grid -->
+            <div class="pricing-grid">
+                <!-- Free Plan -->
+                <div class="pricing-card {% if user and user.plan == 'free' %}current-plan{% endif %}" data-plan="free">
+                    <div class="plan-header">
+                        <h3 class="plan-name">Free</h3>
+                        <div class="plan-price">
+                            <span class="currency">₹</span>
+                            <span class="amount">0</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <p class="plan-credits">10 credits per month</p>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> Single URL scan</li>
+                        <li><i class="fas fa-check"></i> Basic ML detection only</li>
+                        <li><i class="fas fa-times"></i> WHOIS Intelligence</li>
+                        <li><i class="fas fa-times"></i> Blacklist checking</li>
+                        <li><i class="fas fa-times"></i> Bulk scanning</li>
+                    </ul>
+                    {% if user and user.plan == 'free' %}
+                    <button class="plan-btn current" disabled>Current Plan</button>
+                    {% elif is_logged_in %}
+                    <button class="plan-btn" disabled>Downgrade Not Allowed</button>
+                    {% else %}
+                    <a href="/register" class="plan-btn">Get Started</a>
+                    {% endif %}
+                </div>
+
+                <!-- Basic Plan -->
+                <div class="pricing-card {% if user and user.plan == 'basic' %}current-plan{% endif %}"
+                    data-plan="basic">
+                    <div class="plan-header">
+                        <h3 class="plan-name">Basic</h3>
+                        <div class="plan-price">
+                            <span class="currency">₹</span>
+                            <span class="amount">499</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <p class="plan-credits">1,000 credits per month</p>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> URL scanning</li>
+                        <li><i class="fas fa-check"></i> ML detection</li>
+                        <li><i class="fas fa-check"></i> Basic result view</li>
+                        <li><i class="fas fa-times"></i> WHOIS Intelligence</li>
+                        <li><i class="fas fa-times"></i> Bulk scanning</li>
+                    </ul>
+                    {% if user and user.plan == 'basic' %}
+                    <button class="plan-btn current" disabled>Current Plan</button>
+                    {% elif is_logged_in %}
+                    <button class="plan-btn primary" onclick="buyPlan('basic')" id="buy-basic-btn">
+                        <i class="fas fa-shopping-cart"></i> Upgrade Plan
+                    </button>
+                    {% else %}
+                    <a href="/register" class="plan-btn primary">Get Started</a>
+                    {% endif %}
+                </div>
+
+                <!-- Pro Plan (Popular) -->
+                <div class="pricing-card popular {% if user and user.plan == 'pro' %}current-plan{% endif %}"
+                    data-plan="pro">
+                    <div class="popular-badge">Most Popular</div>
+                    <div class="plan-header">
+                        <h3 class="plan-name">Pro</h3>
+                        <div class="plan-price">
+                            <span class="currency">₹</span>
+                            <span class="amount">999</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <p class="plan-credits">2,500 credits per month</p>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> WHOIS Intelligence</li>
+                        <li><i class="fas fa-check"></i> Blacklist checking</li>
+                        <li><i class="fas fa-check"></i> Content analysis</li>
+                        <li><i class="fas fa-check"></i> Advanced results</li>
+                        <li><i class="fas fa-times"></i> No Bulk scanning</li>
+                    </ul>
+                    {% if user and user.plan == 'pro' %}
+                    <button class="plan-btn current" disabled>Current Plan</button>
+                    {% elif is_logged_in %}
+                    <button class="plan-btn primary" onclick="buyPlan('pro')" id="buy-pro-btn">
+                        <i class="fas fa-shopping-cart"></i> Upgrade Plan
+                    </button>
+                    {% else %}
+                    <a href="/register" class="plan-btn primary">Get Started</a>
+                    {% endif %}
+                </div>
+
+                <!-- Pro Plus Plan -->
+                <div class="pricing-card {% if user and user.plan == 'pro_plus' %}current-plan{% endif %}"
+                    data-plan="pro_plus">
+                    <div class="plan-header">
+                        <h3 class="plan-name">Pro Plus</h3>
+                        <div class="plan-price">
+                            <span class="currency">₹</span>
+                            <span class="amount">1,999</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <p class="plan-credits">6,000 credits per month</p>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> Multi-layer detection</li>
+                        <li><i class="fas fa-check"></i> Bulk URL scanning</li>
+                        <li><i class="fas fa-check"></i> Priority processing</li>
+                        <li><i class="fas fa-check"></i> All Pro features</li>
+                        <li><i class="fas fa-check"></i> Advanced analytics</li>
+                    </ul>
+                    {% if user and user.plan == 'pro_plus' %}
+                    <button class="plan-btn current" disabled>Current Plan</button>
+                    {% elif is_logged_in %}
+                    <button class="plan-btn primary" onclick="buyPlan('pro_plus')" id="buy-pro-plus-btn">
+                        <i class="fas fa-shopping-cart"></i> Upgrade Plan
+                    </button>
+                    {% else %}
+                    <a href="/register" class="plan-btn primary">Get Started</a>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Page Styles -->
+    <style>
+        /* Pricing Section */
+        .pricing-section {
+            min-height: 100vh;
+            padding: 120px 2rem 4rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .pricing-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        /* Credits Indicator in Navbar */
+        .credits-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .credits-indicator i {
+            color: #fbbf24;
+            font-size: 1rem;
+        }
+
+        /* Pricing Grid */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Pricing Card */
+        .pricing-card {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 20px 60px rgba(99, 102, 241, 0.2);
+        }
+
+        .pricing-card.popular {
+            border-color: #6366f1;
+            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.3);
+        }
+
+        .pricing-card.current-plan {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -10px;
+            right: 15px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 0.35rem 0.85rem;
+            border-radius: 16px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Plan Header */
+        .plan-header {
+            text-align: center;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+            margin-bottom: 1.25rem;
+        }
+
+        .plan-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .plan-price {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            margin-bottom: 0.4rem;
+        }
+
+        .currency {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .amount {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0 0.2rem;
+        }
+
+        .amount-text {
+            font-size: 1.25rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .period {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .plan-credits {
+            font-size: 0.85rem;
+            color: #fbbf24;
+            font-weight: 600;
+        }
+
+        /* Plan Features */
+        .plan-features {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1.5rem 0;
+        }
+
+        .plan-features li {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.6rem 0;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        .plan-features li i {
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .plan-features li .fa-check {
+            color: #10b981;
+        }
+
+        .plan-features li .fa-times {
+            color: #ef4444;
+            opacity: 0.5;
+        }
+
+        /* Plan Button */
+        .plan-btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+        }
+
+        .plan-btn.primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+        }
+
+        .plan-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .plan-btn.current {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid #10b981;
+            cursor: not-allowed;
+        }
+
+        .plan-btn:not(.primary):not(.current) {
+            background: rgba(99, 102, 241, 0.1);
+            color: #6366f1;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .plan-btn:not(.primary):not(.current):hover {
+            background: rgba(99, 102, 241, 0.2);
+        }
+
+        /* Light Theme */
+        body.light-theme .pricing-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        body.light-theme .pricing-card:hover {
+            box-shadow: 0 20px 60px rgba(99, 102, 241, 0.15);
+        }
+
+        body.light-theme .pricing-card.current-plan {
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        body.light-theme .plan-header {
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        body.light-theme .plan-name {
+            color: #1e293b;
+        }
+
+        body.light-theme .plan-features li {
+            color: #1e293b;
+        }
+
+        body.light-theme .credits-indicator {
+            background: rgba(99, 102, 241, 0.1);
+            color: #1e293b;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .pricing-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .pricing-section {
+                padding: 100px 1rem 3rem;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-heading {
+                font-size: 2rem;
+            }
+        }
+    </style>
+
+    <!-- tsParticles Library -->
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
+
+    <!-- JavaScript -->
+    <script>
+        // ============================================================================
+        // SINGLE SOURCE OF TRUTH: /api/me endpoint
+        // ============================================================================
+        // Initial state from Jinja
+        let currentUserData = null;
+        const isLoggedIn = "{{ 'true' if is_logged_in else 'false' }}" === "true";
+
+        // ============================================================================
+        // FETCH USER DATA FROM DATABASE (via /api/me)
+        // ============================================================================
+        async function fetchUserData() {
+            if (!isLoggedIn) return null;
+
+            try {
+                const response = await fetch('/api/me');
+                const data = await response.json();
+
+                if (data.success) {
+                    currentUserData = data;
+                    console.log('✓ User data fetched from database:', data);
+                    updateUIWithUserData(data);
+                    return data;
+                } else {
+                    console.error('Failed to fetch user data:', data.message);
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+            return null;
+        }
+
+        // ============================================================================
+        // UPDATE UI WITH FRESH DATABASE DATA
+        // ============================================================================
+        function updateUIWithUserData(userData) {
+            if (!userData) return;
+
+            console.log('Updating UI with plan:', userData.plan, 'credits:', userData.credits_remaining);
+
+            // Update credits display in navbar
+            const creditsDisplay = document.getElementById('creditsDisplay');
+            if (creditsDisplay) {
+                creditsDisplay.textContent = userData.credits_remaining === -1 ? '∞' : userData.credits_remaining;
+            }
+
+            // Update all pricing cards based on current plan
+            updatePricingCards(userData.plan);
+        }
+
+        // ============================================================================
+        // UPDATE PRICING CARDS BASED ON CURRENT PLAN FROM DATABASE
+        // ============================================================================
+        function updatePricingCards(currentPlan) {
+            const plans = ['free', 'basic', 'pro', 'pro_plus'];
+
+            plans.forEach(plan => {
+                const card = document.querySelector(`.pricing-card[data-plan="${plan}"]`);
+                if (!card) return;
+
+                // Remove current-plan class from all cards
+                card.classList.remove('current-plan');
+
+                // Get the button
+                const button = card.querySelector('.plan-btn');
+                if (!button) return;
+
+                if (plan === currentPlan) {
+                    // THIS IS THE CURRENT PLAN - Highlight and disable
+                    card.classList.add('current-plan');
+                    button.className = 'plan-btn current';
+                    button.disabled = true;
+                    button.textContent = 'Current Plan';
+                    button.onclick = null;
+                    console.log(`✓ Marked ${plan} as current plan`);
+                } else {
+                    // NOT THE CURRENT PLAN
+                    if (plan === 'free') {
+                        // Free plan - disable downgrade
+                        button.className = 'plan-btn';
+                        button.disabled = true;
+                        button.textContent = 'Downgrade Not Allowed';
+                        button.onclick = null;
+                    } else {
+                        // Paid plans (basic, pro, pro_plus) - show upgrade
+                        button.className = 'plan-btn primary';
+                        button.disabled = false;
+                        button.innerHTML = '<i class="fas fa-shopping-cart"></i> Upgrade Plan';
+                        button.onclick = () => buyPlan(plan);
+                    }
+                }
+            });
+        }
+
+        // ============================================================================
+        // THEME TOGGLE
+        // ============================================================================
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        if (savedTheme === 'light') {
+            body.classList.add('light-theme');
+        }
+        updateThemeIcon(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('light-theme');
+            const newTheme = body.classList.contains('light-theme') ? 'light' : 'dark';
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        function updateThemeIcon(theme) {
+            const icon = themeToggle.querySelector('i');
+            icon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+
+        // ============================================================================
+        // TSPARTICLES INITIALIZATION
+        // ============================================================================
+        tsParticles.load("tsparticles", {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: "#6366f1" },
+                shape: { type: "circle" },
+                opacity: { value: 0.4, random: true },
+                size: { value: 6, random: true },
+                line_linked: { enable: false },
+                move: {
+                    enable: true,
+                    speed: 1,
+                    direction: "none",
+                    random: false,
+                    straight: false,
+                    out_mode: "out",
+                    bounce: false
+                }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: {
+                    onhover: { enable: true, mode: "repulse" },
+                    onclick: { enable: true, mode: "push" },
+                    resize: true
+                },
+                modes: {
+                    repulse: { distance: 100, duration: 0.4 },
+                    push: { particles_nb: 4 }
+                }
+            },
+            retina_detect: true
+        });
+
+        // ============================================================================
+        // BUY PLAN FUNCTION (STRIPE INTEGRATION)
+        // ============================================================================
+        async function buyPlan(planName) {
+            const button = document.getElementById(`buy-${planName}-btn`);
+
+            // Disable button and show loading state
+            if (button) {
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            }
+
+            try {
+                const response = await fetch('/create-checkout-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ plan_id: planName })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.session_url) {
+                    // Redirect to Stripe Checkout
+                    console.log('Redirecting to Stripe Checkout...');
+                    window.location.href = data.session_url;
+                } else {
+                    alert(data.message || 'Failed to create checkout session');
+                    // Re-enable button
+                    if (button) {
+                        button.disabled = false;
+                        button.innerHTML = '<i class="fas fa-shopping-cart"></i> Upgrade Plan';
+                    }
+                }
+            } catch (error) {
+                console.error('Error creating checkout session:', error);
+                alert('An error occurred while processing your request');
+                // Re-enable button
+                if (button) {
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-shopping-cart"></i> Upgrade Plan';
+                }
+            }
+        }
+
+        // ============================================================================
+        // CHANGE PLAN FUNCTION (FOR FREE/DOWNGRADE)
+        // ============================================================================
+        async function changePlan(planName) {
+            if (!confirm(`Are you sure you want to change to the ${planName.toUpperCase()} plan?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/change-plan', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ plan: planName })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(data.message);
+                    // Re-fetch user data from database and update UI WITHOUT page reload
+                    console.log('Plan changed successfully, refreshing UI...');
+                    await fetchUserData();
+                } else {
+                    alert(data.message || 'Failed to change plan');
+                }
+            } catch (error) {
+                console.error('Error changing plan:', error);
+                alert('An error occurred while changing your plan');
+            }
+        }
+
+        // ============================================================================
+        // INITIALIZE ON PAGE LOAD
+        // ============================================================================
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('Pricing page loaded, fetching user data from database...');
+            // Fetch fresh user data from database via /api/me
+            await fetchUserData();
+        });
+    </script>
+
+    <!-- Global Keyboard Shortcuts -->
+    <script src="{{ url_for('static', filename='js/global-shortcuts.js') }}"></script>
+</body>
+
+</html>

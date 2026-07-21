@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="AI-Powered Phishing Detection System - Enterprise-grade URL security using real-time machine learning intelligence.">
+    <title>SafeNet AI | AI-Powered Phishing Detection</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Favicons (multiple formats for browser compatibility) -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='favicon.png') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='favicon.png') }}">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}?v={{ cache_bust }}">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <!-- Left Section: Brand -->
+            <div class="nav-left">
+                <div class="nav-brand">
+                    <i class="fas fa-shield-halved"></i>
+                    <span>SafeNet AI</span>
+                    {% if is_logged_in and user_plan and user_plan != 'free' %}
+                    {% if user_plan == 'basic' %}
+                    <span class="plan-badge basic">BASIC</span>
+                    {% elif user_plan == 'pro' %}
+                    <span class="plan-badge pro">PRO</span>
+                    {% elif user_plan == 'pro_plus' %}
+                    <span class="plan-badge pro-plus">PRO+</span>
+                    {% elif user_plan == 'enterprise' %}
+                    <span class="plan-badge enterprise">ENTERPRISE</span>
+                    {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Center Section: Menu Links -->
+            <div class="nav-center">
+                <ul class="nav-menu">
+                    <li><a href="/" class="nav-link active">Home</a></li>
+                    {% if is_logged_in %}
+                    <li><a href="/dashboard" class="nav-link">Dashboard</a></li>
+                    <li><a href="/scan" class="nav-link">Scan</a></li>
+                    {% endif %}
+                    <li><a href="#features" class="nav-link">Features</a></li>
+                    <li><a href="#how-it-works" class="nav-link">How It Works</a></li>
+                    <li><a href="#about" class="nav-link">About</a></li>
+                    <li><a href="/pricing" class="nav-link">Pricing</a></li>
+                </ul>
+            </div>
+
+            <!-- Right Section: Actions -->
+            <div class="nav-right">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+
+                {% if is_logged_in %}
+                <!-- Credits Dropdown Control Center -->
+                <div class="credits-dropdown-wrapper">
+                    <button class="credits-indicator" id="creditsToggle" aria-label="Credits Overview">
+                        <i class="fas fa-coins"></i>
+                        <span id="creditsDisplay">{{ user_credits if user_credits != -1 else '∞' }}</span>
+                        <i class="fas fa-chevron-down dropdown-arrow"></i>
+                    </button>
+
+                    <!-- Credits Dropdown Panel -->
+                    <div class="credits-dropdown" id="creditsDropdown">
+                        <div class="credits-dropdown-header">
+                            <h3>Credits Overview</h3>
+                        </div>
+
+                        <div class="credits-dropdown-content">
+                            <!-- Current Credits -->
+                            <div class="credits-stat-row">
+                                <div class="credits-stat-item primary">
+                                    <i class="fas fa-coins"></i>
+                                    <div class="credits-stat-info">
+                                        <span class="credits-stat-label">Available Credits</span>
+                                        <span class="credits-stat-value" id="dropdownCreditsValue">{{ user_credits if
+                                            user_credits != -1 else '∞' }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Plan Info -->
+                            <div class="credits-plan-info">
+                                <div class="plan-info-item">
+                                    <i class="fas fa-crown"></i>
+                                    <span class="plan-info-label">Current Plan</span>
+                                    <span class="plan-info-value">{{ user_plan|title if user_plan else 'Free' }}</span>
+                                </div>
+                                {% if user_credits != -1 %}
+                                <div class="plan-info-item">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <span class="plan-info-label">Resets In</span>
+                                    <span class="plan-info-value" id="creditResetTimer">Loading...</span>
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Usage Progress Bar (only for paid users with limited credits) -->
+                            {% if user_credits != -1 %}
+                            <div class="credits-usage-section">
+                                <div class="usage-header">
+                                    <span class="usage-label">Monthly Usage</span>
+                                    <span class="usage-stats" id="usageStats">0 / {{ user_credits }}</span>
+                                </div>
+                                <div class="usage-progress-bar">
+                                    <div class="usage-progress-fill" id="usageProgressFill" style="width: 0%"></div>
+                                </div>
+                                <div class="usage-warning" id="lowCreditsWarning" style="display: none;">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span>Low credits remaining</span>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <!-- Action Buttons -->
+                            <div class="credits-actions">
+                                <a href="/pricing" class="credits-action-btn primary">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span>Upgrade Plan</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="/logout" class="logout-btn" aria-label="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+                {% else %}
+                <a href="/login" class="logout-btn" aria-label="Login">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Login</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Animated Background -->
+    <div id="tsparticles"></div>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <!-- Subtle Label -->
+            <div class="hero-label">
+                <i class="fas fa-brain"></i>
+                <span>AI-Powered Security</span>
+            </div>
+
+            <!-- Main Heading -->
+            <h1 class="hero-heading">
+                AI-Powered URL Security Analysis
+            </h1>
+
+            <!-- Stat Toggles -->
+            <div class="stat-toggles">
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="stat-value">95%</div>
+                    <div class="stat-label">Accuracy</div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="stat-value">100%</div>
+                    <div class="stat-label">Real-Time</div>
+                </div>
+
+                <div class="stat-item">
+                    <div class="stat-icon">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">Layer Detection</div>
+                </div>
+            </div>
+
+            <!-- Get Started Button - Only for Logged In Users -->
+            {% if is_logged_in %}
+            <div class="primary-action">
+                <a href="/scan" class="btn-get-started">
+                    <span>Get Started</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Features Section - Lightweight -->
+    <section id="features" class="features-compact">
+        <h2 class="features-section-title">Features</h2>
+        <div class="features-compact-container">
+            <div class="feature-item-compact">
+                <i class="fas fa-bolt feature-icon-compact"></i>
+                <div class="feature-text-compact">
+                    <h3>Real-Time URL Analysis</h3>
+                    <p>Instant threat detection using live machine learning models and threat intelligence.</p>
+                </div>
+            </div>
+
+            <div class="feature-item-compact">
+                <i class="fas fa-layer-group feature-icon-compact"></i>
+                <div class="feature-text-compact">
+                    <h3>Multi-Layer Detection</h3>
+                    <p>Combined ML, WHOIS metadata, and blacklist verification for comprehensive security.</p>
+                </div>
+            </div>
+
+            <div class="feature-item-compact">
+                <i class="fas fa-microscope feature-icon-compact"></i>
+                <div class="feature-text-compact">
+                    <h3>Explainable AI Decisions</h3>
+                    <p>Transparent detection signals with interpretable indicators and clear evidence.</p>
+                </div>
+            </div>
+
+            <div class="feature-item-compact">
+                <i class="fas fa-shield-check feature-icon-compact"></i>
+                <div class="feature-text-compact">
+                    <h3>Enterprise-Grade Security</h3>
+                    <p>Production-ready system designed for accuracy, trust, and real-world deployment.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How SafeNet AI Works Section - Alternating Timeline -->
+    <section id="how-it-works" class="how-it-works-timeline">
+        <div class="timeline-container">
+            <h2 class="section-title-timeline">How SafeNet AI Works</h2>
+
+            <!-- Center Timeline Line -->
+            <div class="timeline-line"></div>
+
+            <!-- Step 1 - Left -->
+            <div class="timeline-step left">
+                <div class="step-content-box">
+                    <h3>User Submits URL</h3>
+                    <p>Enter any URL to analyze for potential phishing threats.</p>
+                </div>
+                <div class="step-number">1</div>
+            </div>
+
+            <!-- Step 2 - Right -->
+            <div class="timeline-step right">
+                <div class="step-number">2</div>
+                <div class="step-content-box">
+                    <h3>Feature Extraction</h3>
+                    <p>System extracts URL patterns, domain characteristics, and behavioral features.</p>
+                </div>
+            </div>
+
+            <!-- Step 3 - Left -->
+            <div class="timeline-step left">
+                <div class="step-content-box">
+                    <h3>Multi-Layer Analysis</h3>
+                    <p>ML classification, WHOIS lookup, and blacklist verification run in parallel.</p>
+                </div>
+                <div class="step-number">3</div>
+            </div>
+
+            <!-- Step 4 - Right -->
+            <div class="timeline-step right">
+                <div class="step-number">4</div>
+                <div class="step-content-box">
+                    <h3>Final Verdict</h3>
+                    <p>System generates classification: Legitimate, Suspicious, or Phishing with confidence score.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About SafeNet AI Section - Futuristic Immersive Layout -->
+    <section id="about" class="about-futuristic">
+        <div class="about-immersive-container">
+            <!-- Section Header -->
+            <div class="about-header">
+                <h2 class="about-main-title">ABOUT SAFENET AI</h2>
+                <p class="about-subtitle">AI-driven phishing intelligence built for real-world security</p>
+            </div>
+
+            <!-- Immersive Statement Block -->
+            <div class="immersive-statement">
+                <p class="statement-large">
+                    SafeNet AI is an advanced phishing detection platform engineered to identify malicious URLs
+                    using real-world attack intelligence and layered AI security models.
+                </p>
+            </div>
+
+            <!-- Key Principles - Horizontal Flow -->
+            <div class="principles-flow">
+                <div class="principle-tag">Accuracy-First Architecture</div>
+                <div class="principle-tag">Explainable AI Decisions</div>
+                <div class="principle-tag">Real-World Threat Intelligence</div>
+                <div class="principle-tag">Enterprise & Academic Ready</div>
+            </div>
+
+            <!-- Technical Foundation -->
+            <div class="tech-foundation-minimal">
+                <h3 class="tech-title-minimal">TECHNICAL FOUNDATION</h3>
+                <div class="tech-grid-minimal">
+                    <div class="tech-capability">Machine Learning Classification</div>
+                    <div class="tech-capability">Domain & WHOIS Intelligence</div>
+                    <div class="tech-capability">Real-time Blacklist Verification</div>
+                    <div class="tech-capability">Multi-Layer Threat Correlation</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Phishing Hunters / Experts Section -->
+    <section id="experts" class="experts-section">
+        <div class="experts-container">
+            <!-- Section Header -->
+            <div class="experts-header">
+                <div class="experts-label">
+                    <i class="fas fa-crosshairs"></i>
+                    <span>Real Defenders</span>
+                </div>
+                <h2 class="experts-title">The Phishing Hunters</h2>
+                <p class="experts-subtitle">Meet the real-world cybersecurity experts who have dedicated their careers to exposing, tracking, and stopping phishing attackers globally.</p>
+            </div>
+
+            <!-- Expert Cards Grid -->
+            <div class="experts-grid">
+
+                <!-- Expert 1: Brian Krebs -->
+                <div class="expert-card">
+                    <div class="expert-card-inner">
+                        <div class="expert-photo-wrapper">
+                            <div class="expert-photo-ring"></div>
+                            <img
+                                src="{{ url_for('static', filename='images/brian_krebs.jpg') }}"
+                                alt="Brian Krebs"
+                                class="expert-photo"
+                                onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Brian+Krebs&size=200&background=6366f1&color=fff&bold=true&font-size=0.4';"
+                            >
+                            <div class="expert-badge">
+                                <i class="fas fa-shield-halved"></i>
+                            </div>
+                        </div>
+                        <div class="expert-info">
+                            <h3 class="expert-name">Brian Krebs</h3>
+                            <p class="expert-role">Investigative Cybersecurity Journalist</p>
+                            <div class="expert-org">
+                                <i class="fas fa-globe"></i>
+                                <span>KrebsOnSecurity.com</span>
+                            </div>
+                            <p class="expert-bio">
+                                Former Washington Post reporter turned independent investigative journalist. Brian Krebs has exposed hundreds of phishing operations, cybercriminal gangs, and underground fraud marketplaces. His deep-dive investigations have directly led to arrests of major phishing kingpins worldwide.
+                            </p>
+                            <div class="expert-tags">
+                                <span class="expert-tag">Phishing Investigations</span>
+                                <span class="expert-tag">Cybercrime</span>
+                                <span class="expert-tag">Data Breaches</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Expert 2: Troy Hunt -->
+                <div class="expert-card">
+                    <div class="expert-card-inner">
+                        <div class="expert-photo-wrapper">
+                            <div class="expert-photo-ring"></div>
+                            <img
+                                id="troyHuntPhoto"
+                                src="{{ url_for('static', filename='images/troy_hunt.jpg') }}"
+                                alt="Troy Hunt"
+                                class="expert-photo"
+                                onerror="this.onerror=null;this.src='https://pluralsight.imgix.net/author/lg/troy-hunt-v2.jpg';this.onerror=function(){this.src='https://ui-avatars.com/api/?name=Troy+Hunt&size=200&background=6366f1&color=fff&bold=true&font-size=0.4';};"
+                            >
+                            <div class="expert-badge">
+                                <i class="fas fa-database"></i>
+                            </div>
+                        </div>
+                        <div class="expert-info">
+                            <h3 class="expert-name">Troy Hunt</h3>
+                            <p class="expert-role">Security Researcher & Educator</p>
+                            <div class="expert-org">
+                                <i class="fas fa-globe"></i>
+                                <span>HaveIBeenPwned.com</span>
+                            </div>
+                            <p class="expert-bio">
+                                Creator of "Have I Been Pwned?" — the world's largest database of compromised credentials from phishing attacks. Microsoft Regional Director and MVP, Troy Hunt has helped millions of users discover if they were victimized by phishing campaigns and data breaches.
+                            </p>
+                            <div class="expert-tags">
+                                <span class="expert-tag">Breach Tracking</span>
+                                <span class="expert-tag">Phishing Awareness</span>
+                                <span class="expert-tag">Identity Theft</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Expert 3: Dave Jevans -->
+                <div class="expert-card">
+                    <div class="expert-card-inner">
+                        <div class="expert-photo-wrapper">
+                            <div class="expert-photo-ring"></div>
+                            <img
+                                src="{{ url_for('static', filename='images/dave_jevans.jpg') }}"
+                                alt="Dave Jevans"
+                                class="expert-photo"
+                                onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=Dave+Jevans&size=200&background=7c3aed&color=fff&bold=true&font-size=0.4';"
+                            >
+                            <div class="expert-badge">
+                                <i class="fas fa-fish"></i>
+                            </div>
+                        </div>
+                        <div class="expert-info">
+                            <h3 class="expert-name">Dave Jevans</h3>
+                            <p class="expert-role">Founder, Anti-Phishing Working Group</p>
+                            <div class="expert-org">
+                                <i class="fas fa-globe"></i>
+                                <span>APWG.org</span>
+                            </div>
+                            <p class="expert-bio">
+                                Dave Jevans founded the Anti-Phishing Working Group (APWG) in 2003 — the global coalition that coordinates the international response to phishing attacks. Under his leadership, APWG became the world's largest non-industry association focused on eliminating phishing fraud.
+                            </p>
+                            <div class="expert-tags">
+                                <span class="expert-tag">APWG Founder</span>
+                                <span class="expert-tag">Policy & Standards</span>
+                                <span class="expert-tag">Global Coordination</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <i class="fas fa-shield-halved"></i>
+                    <span>SafeNet AI</span>
+                </div>
+                <p class="footer-tagline">AI-Powered Phishing Detection System</p>
+
+                <!-- Technology Stack -->
+                <div class="footer-tech-stack">
+                    <a href="https://en.wikipedia.org/wiki/Python_(programming_language)" target="_blank"
+                        rel="noopener noreferrer" title="Learn about Python">
+                        <span><i class="fab fa-python"></i> Python</span>
+                    </a>
+                    <a href="https://en.wikipedia.org/wiki/Flask_(web_framework)" target="_blank"
+                        rel="noopener noreferrer" title="Learn about Flask">
+                        <span><i class="fas fa-flask"></i> Flask</span>
+                    </a>
+                    <a href="https://en.wikipedia.org/wiki/Machine_learning" target="_blank" rel="noopener noreferrer"
+                        title="Learn about Machine Learning">
+                        <span><i class="fas fa-brain"></i> Machine Learning</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#how-it-works">How It Works</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="/contact">Contact</a></li>
+                        {% if not is_logged_in %}
+                        <li><a href="/login">Login</a></li>
+                        <li><a href="/register">Sign Up</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Legal &amp; Support</h4>
+                    <ul>
+                        <li><a href="/terms">Terms &amp; Conditions</a></li>
+                        <li><a href="/privacy">Privacy Policy</a></li>
+                        <li><a href="/faq">FAQ</a></li>
+                        <li><a href="/disclaimer">Disclaimer</a></li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter Subscription -->
+                <div class="footer-newsletter">
+                    <h4>Subscribe to our newsletter</h4>
+                    <p class="footer-newsletter-subtitle">Stay ahead of cyber threats &mdash; get the latest security news and updates delivered straight to your inbox.</p>
+
+                    <form class="footer-newsletter-form" onsubmit="handleNewsletterSubmit(event)">
+                        <input type="email" class="footer-newsletter-input" placeholder="Enter your email" required>
+                        <button type="submit" class="footer-newsletter-btn">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="footer-container footer-container-centered">
+                <div class="footer-social-icons">
+                    <a href="https://www.linkedin.com/in/ayush-bhoir-41318139b" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="LinkedIn" title="LinkedIn">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="https://x.com/ayushbhoir10" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="X (Twitter)" title="X (Twitter)">
+                        <i class="fab fa-x-twitter"></i>
+                    </a>
+                    <a href="https://www.youtube.com/@SafeNetAI-u4q" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="YouTube" title="YouTube">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                    <a href="https://www.instagram.com/safenetai" target="_blank" rel="noopener noreferrer" class="footer-social-btn" aria-label="Instagram" title="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
+                <p>&copy; 2026 SafeNet AI. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- tsParticles Library -->
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
+
+    <!-- JavaScript -->
+    <script>
+        // Troy Hunt photo fallback chain - tries multiple sources until one works
+        const troyHuntSources = [
+            'https://upload.wikimedia.org/wikipedia/commons/0/04/Troy_Hunt_%28cropped%29.jpg',
+            'https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Troy_Hunt_%28cropped%29.jpg/440px-Troy_Hunt_%28cropped%29.jpg',
+            'https://pbs.twimg.com/profile_images/649688487175958528/I5xmWCuV_400x400.jpg',
+            'https://i.imgur.com/GaT3qQP.jpeg',
+            'https://www.gravatar.com/avatar/d0d38e843cf69b97c38e3ff0a8bf1c76?s=400&d=404',
+        ];
+        let troyFallbackIndex = 0;
+        function troyHuntFallback(img) {
+            troyFallbackIndex++;
+            if (troyFallbackIndex < troyHuntSources.length) {
+                img.onerror = troyHuntFallback.bind(null, img);
+                img.src = troyHuntSources[troyFallbackIndex];
+            } else {
+                img.onerror = null;
+                img.src = 'https://ui-avatars.com/api/?name=Troy+Hunt&size=200&background=6366f1&color=fff&bold=true&font-size=0.4';
+            }
+        }
+
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.body.classList.toggle('light-theme', savedTheme === 'light');
+        updateThemeIcon(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const newTheme = document.body.classList.contains('light-theme') ? 'dark' : 'light';
+            document.body.classList.toggle('light-theme');
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+
+            // Reload particles with new theme
+            initParticles();
+        });
+
+        function updateThemeIcon(theme) {
+            const icon = themeToggle.querySelector('i');
+            icon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+
+        // Initialize tsParticles
+        function initParticles() {
+            // Get current theme color
+            const isLight = document.body.classList.contains('light-theme');
+            const particleColor = isLight ? '#6366f1' : '#6366f1';
+
+            tsParticles.load("tsparticles", {
+                background: {
+                    color: {
+                        value: "transparent"
+                    }
+                },
+                fpsLimit: 60,
+                particles: {
+                    number: {
+                        value: 50,
+                        density: {
+                            enable: true,
+                            area: 800
+                        }
+                    },
+                    color: {
+                        value: particleColor
+                    },
+                    shape: {
+                        type: "circle"
+                    },
+                    opacity: {
+                        value: 0.25,
+                        random: true,
+                        animation: {
+                            enable: true,
+                            speed: 0.4,
+                            minimumValue: 0.1,
+                            sync: false
+                        }
+                    },
+                    size: {
+                        value: 3,
+                        random: {
+                            enable: true,
+                            minimumValue: 1.5
+                        }
+                    },
+                    move: {
+                        enable: true,
+                        speed: 0.25,
+                        direction: "none",
+                        random: true,
+                        straight: false,
+                        outModes: {
+                            default: "out"
+                        }
+                    }
+                },
+                interactivity: {
+                    events: {
+                        onHover: {
+                            enable: false
+                        },
+                        onClick: {
+                            enable: false
+                        }
+                    }
+                },
+                detectRetina: true
+            });
+        }
+
+        // Initialize particles on load
+        window.addEventListener('load', () => {
+            initParticles();
+        });
+
+        // Smooth scroll navigation for anchor links
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get all navigation links that start with #
+            const navLinks = document.querySelectorAll('a[href^="#"]');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    const targetId = this.getAttribute('href');
+                    const targetSection = document.querySelector(targetId);
+
+                    if (targetSection) {
+                        // Get navbar height for offset
+                        const navbar = document.querySelector('.navbar');
+                        const navbarHeight = navbar ? navbar.offsetHeight : 80;
+
+                        // Calculate position with offset
+                        const targetPosition = targetSection.offsetTop - navbarHeight - 20;
+
+                        // Smooth scroll to target
+                        window.scrollTo({
+                            top: targetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function () {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Credits Dropdown Control Center
+        {% if is_logged_in %}
+        const creditsToggle = document.getElementById('creditsToggle');
+        const creditsDropdown = document.getElementById('creditsDropdown');
+        let dropdownOpen = false;
+
+        // Toggle dropdown
+        creditsToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownOpen = !dropdownOpen;
+            creditsToggle.classList.toggle('active', dropdownOpen);
+            creditsDropdown.classList.toggle('active', dropdownOpen);
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (dropdownOpen && !creditsToggle.contains(e.target) && !creditsDropdown.contains(e.target)) {
+                dropdownOpen = false;
+                creditsToggle.classList.remove('active');
+                creditsDropdown.classList.remove('active');
+            }
+        });
+
+        // Fetch and update credit information from API
+        async function updateCreditInfo() {
+            try {
+                const response = await fetch('/api/credits/info');
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update navbar badge
+                    const creditsDisplay = document.getElementById('creditsDisplay');
+                    if (creditsDisplay) {
+                        creditsDisplay.textContent = data.credits_remaining === -1 ? '∞' : data.credits_remaining;
+                    }
+
+                    // Update dropdown value
+                    const dropdownValue = document.getElementById('dropdownCreditsValue');
+                    if (dropdownValue) {
+                        dropdownValue.textContent = data.credits_remaining === -1 ? '∞' : data.credits_remaining;
+                    }
+
+                    // Update reset timer
+                    const resetTimer = document.getElementById('creditResetTimer');
+                    if (resetTimer && data.days_until_reset !== null) {
+                        resetTimer.textContent = `${data.days_until_reset} day${data.days_until_reset !== 1 ? 's' : ''}`;
+                    }
+
+                    // Update progress bar (only for limited credits)
+                    if (data.total_credits !== -1) {
+                        const progressFill = document.getElementById('usageProgressFill');
+                        const usageStats = document.getElementById('usageStats');
+                        const lowCreditsWarning = document.getElementById('lowCreditsWarning');
+
+                        if (progressFill) {
+                            const usagePercentage = data.usage_percentage || 0;
+                            progressFill.style.width = `${usagePercentage}%`;
+
+                            // Update color based on remaining percentage
+                            const remainingPercentage = 100 - usagePercentage;
+                            progressFill.classList.remove('warning', 'danger');
+
+                            if (remainingPercentage < 5) {
+                                progressFill.classList.add('danger');
+                                if (lowCreditsWarning) lowCreditsWarning.style.display = 'flex';
+                            } else if (remainingPercentage < 10) {
+                                progressFill.classList.add('warning');
+                                if (lowCreditsWarning) lowCreditsWarning.style.display = 'flex';
+                            } else {
+                                if (lowCreditsWarning) lowCreditsWarning.style.display = 'none';
+                            }
+                        }
+
+                        if (usageStats) {
+                            usageStats.textContent = `${data.credits_used} / ${data.total_credits}`;
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching credit info:', error);
+            }
+        }
+
+        // Initialize on page load
+        updateCreditInfo();
+
+        // Refresh credit info every 30 seconds
+        setInterval(updateCreditInfo, 30000);
+        {% endif %}
+
+        // Newsletter subscribe handler
+        function handleNewsletterSubmit(e) {
+            e.preventDefault();
+            const input = e.target.querySelector('.footer-newsletter-input');
+            const btn = e.target.querySelector('.footer-newsletter-btn');
+            const originalText = btn.textContent;
+            btn.textContent = '✓ Subscribed!';
+            btn.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+            input.value = '';
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '';
+            }, 3000);
+        }
+
+    </script>
+
+    <!-- Global Keyboard Shortcuts -->
+    <script src="{{ url_for('static', filename='js/global-shortcuts.js') }}"></script>
+</body>
+
+</html>

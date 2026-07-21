@@ -1,0 +1,267 @@
+/* ============================================
+   LEGAL PAGES - SHARED STYLES
+   Terms, Privacy, FAQ, Disclaimer
+   ============================================ */
+
+/* Use existing CSS variables from home.css */
+:root {
+    --bg-primary: #0a0e27;
+    --bg-secondary: #151932;
+    --bg-card: rgba(17, 24, 39, 0.6);
+    --bg-hover: #242b4a;
+    --accent-primary: #6366f1;
+    --accent-secondary: #8b5cf6;
+    --accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    --text-primary: #ffffff;
+    --text-secondary: #a5b4fc;
+    --text-muted: #6b7280;
+    --border-color: rgba(99, 102, 241, 0.2);
+    --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+    --transition-normal: 0.3s ease;
+}
+
+/* Light Theme */
+body.light-theme {
+    --bg-primary: #f8fafc;
+    --bg-secondary: #ffffff;
+    --bg-card: rgba(255, 255, 255, 0.8);
+    --bg-hover: #f1f5f9;
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --border-color: rgba(99, 102, 241, 0.3);
+    --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.2);
+}
+
+/* Global Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Legal Page Container */
+.legal-page {
+    min-height: 100vh;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    padding-top: 100px;
+    padding-bottom: 4rem;
+}
+
+.legal-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* Page Header */
+.legal-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.legal-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+    background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.legal-subtitle {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+}
+
+.legal-date {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+}
+
+/* Content Sections */
+.legal-content {
+    line-height: 1.8;
+}
+
+.legal-section {
+    margin-bottom: 3rem;
+}
+
+.legal-section h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--accent-primary);
+    display: inline-block;
+}
+
+.legal-section h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.legal-section p {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    line-height: 1.8;
+}
+
+.legal-section ul,
+.legal-section ol {
+    margin-left: 2rem;
+    margin-bottom: 1rem;
+    color: var(--text-secondary);
+}
+
+.legal-section li {
+    margin-bottom: 0.5rem;
+    line-height: 1.7;
+}
+
+/* Highlighted Box */
+.legal-highlight {
+    background: var(--bg-card);
+    border-left: 4px solid var(--accent-primary);
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+}
+
+.legal-highlight p {
+    margin-bottom: 0;
+    color: var(--text-primary);
+}
+
+/* FAQ Specific Styles */
+.faq-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    transition: all var(--transition-normal);
+}
+
+.faq-item:hover {
+    border-color: var(--accent-primary);
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.1);
+}
+
+.faq-question {
+    padding: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    user-select: none;
+}
+
+.faq-question:hover {
+    color: var(--accent-primary);
+}
+
+.faq-icon {
+    font-size: 1.25rem;
+    color: var(--accent-primary);
+    transition: transform var(--transition-normal);
+}
+
+.faq-item.active .faq-icon {
+    transform: rotate(180deg);
+}
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    padding: 0 1.5rem;
+}
+
+.faq-item.active .faq-answer {
+    max-height: 500px;
+    padding: 0 1.5rem 1.5rem;
+}
+
+.faq-answer p {
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 0.75rem;
+}
+
+/* Contact Info */
+.legal-contact {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-top: 3rem;
+    text-align: center;
+}
+
+.legal-contact h3 {
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.legal-contact p {
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.legal-contact a {
+    color: var(--accent-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color var(--transition-normal);
+}
+
+.legal-contact a:hover {
+    color: var(--accent-secondary);
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .legal-page {
+        padding-top: 80px;
+    }
+
+    .legal-title {
+        font-size: 2rem;
+    }
+
+    .legal-section h2 {
+        font-size: 1.25rem;
+    }
+
+    .legal-section h3 {
+        font-size: 1.125rem;
+    }
+
+    .faq-question {
+        font-size: 1rem;
+        padding: 1.25rem;
+    }
+
+    .legal-section ul,
+    .legal-section ol {
+        margin-left: 1.5rem;
+    }
+}

@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contact SafeNet AI - Get in touch with our team for support and inquiries.">
+    <title>Contact Us | SafeNet AI</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Favicons (multiple formats for browser compatibility) -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='favicon.png') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='favicon.png') }}">
+
+
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-shield-halved"></i>
+                <span>SafeNet AI</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="/" class="nav-link">Home</a></li>
+                {% if is_logged_in %}
+                <li><a href="/dashboard" class="nav-link">Dashboard</a></li>
+                <li><a href="/scan" class="nav-link">Scan</a></li>
+                {% endif %}
+                <li><a href="/contact" class="nav-link active">Contact</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+
+                {% if is_logged_in %}
+                <!-- Notification Bell -->
+                <div class="notification-wrapper">
+                    <button class="notification-bell" id="notificationBell" aria-label="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                    </button>
+
+                    <!-- Notification Dropdown -->
+                    <div class="notification-dropdown" id="notificationDropdown">
+                        <div class="notification-header">
+                            <h3>Notifications</h3>
+                            <button class="mark-all-read" id="markAllRead">Mark all as read</button>
+                        </div>
+                        <div class="notification-list" id="notificationList">
+                            <div class="notification-empty">
+                                <i class="fas fa-bell-slash"></i>
+                                <p>No notifications</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if is_logged_in %}
+                <a href="/logout" class="logout-btn" aria-label="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+                {% else %}
+                <a href="/login" class="logout-btn" aria-label="Login">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Login</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Animated Background -->
+    <div id="tsparticles"></div>
+
+    <!-- Contact Section -->
+    <section class="contact-section">
+        <div class="contact-container">
+            <!-- Header -->
+            <div class="contact-header">
+                <div class="hero-label">
+                    <i class="fas fa-envelope"></i>
+                    <span>Get In Touch</span>
+                </div>
+                <h1 class="section-heading">Contact SafeNet AI</h1>
+                <p class="section-subtitle">Have questions or need support? We're here to help you secure your digital
+                    presence.</p>
+            </div>
+
+            <!-- Two Column Grid -->
+            <div class="contact-grid">
+                <!-- Left Column: Contact Form -->
+                <div class="contact-card">
+                    <div class="card-header-contact">
+                        <i class="fas fa-paper-plane"></i>
+                        <h2>Send a Message</h2>
+                    </div>
+
+                    {% if not is_logged_in %}
+                    <div class="login-alert">
+                        <i class="fas fa-info-circle"></i>
+                        <div>
+                            <strong>Login Required</strong>
+                            <p>Please <a href="/login">login</a> to send us a message and track your inquiries.</p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <form id="contactForm" class="contact-form">
+                        <div class="form-group">
+                            <label for="email">
+                                <i class="fas fa-envelope"></i>
+                                Your Email
+                            </label>
+                            <input type="email" id="email" class="form-input" value="{{ user_email }}" {% if
+                                is_logged_in %}readonly{% else %}disabled{% endif %}
+                                placeholder="{% if not is_logged_in %}Login to enable{% else %}{{ user_email }}{% endif %}">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message">
+                                <i class="fas fa-comment-dots"></i>
+                                Your Message
+                            </label>
+                            <textarea id="message" class="form-input form-textarea" {% if not is_logged_in %}disabled{%
+                                endif %}
+                                placeholder="{% if not is_logged_in %}Login required to send a message{% else %}Type your message here...{% endif %}"
+                                rows="6"></textarea>
+                        </div>
+
+                        <button type="submit" class="submit-btn" {% if not is_logged_in %}disabled{% endif %}>
+                            {% if is_logged_in %}
+                            <i class="fas fa-paper-plane"></i>
+                            <span>Send Message</span>
+                            {% else %}
+                            <i class="fas fa-lock"></i>
+                            <span>Login Required</span>
+                            {% endif %}
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Right Column: Contact Information -->
+                <div class="contact-card">
+                    <div class="card-header-contact">
+                        <i class="fas fa-address-book"></i>
+                        <h2>Contact Information</h2>
+                    </div>
+
+                    <div class="contact-info-list">
+                        <!-- Email -->
+                        <div class="contact-info-item">
+                            <div class="contact-info-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-info-content">
+                                <h3>Email</h3>
+                                <p>ayushbhoir114@gmail.com</p>
+                            </div>
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="contact-info-item">
+                            <div class="contact-info-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="contact-info-content">
+                                <h3>Phone</h3>
+                                <p>+91 8446499524</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Social Media Section -->
+                    <div class="social-section">
+                        <h3>Connect With Us</h3>
+                        <div class="social-icons">
+                            <a href="https://www.instagram.com/safenetai" target="_blank" rel="noopener noreferrer" class="social-icon" title="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="https://t.me/yourusername" target="_blank" rel="noopener noreferrer" class="social-icon" title="Telegram">
+                                <i class="fab fa-telegram"></i>
+                            </a>
+                            <a href="https://www.linkedin.com/in/ayush-bhoir-41318139b" target="_blank" rel="noopener noreferrer" class="social-icon" title="LinkedIn">
+                                <i class="fab fa-linkedin"></i>
+                            </a>
+                            <a href="https://github.com/yourusername" target="_blank" rel="noopener noreferrer" class="social-icon" title="GitHub">
+                                <i class="fab fa-github"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Page Styles -->
+    <style>
+        /* Contact Section */
+        .contact-section {
+            min-height: 100vh;
+            padding: 120px 2rem 4rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .contact-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .contact-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-heading {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 1rem 0;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* Grid Layout */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        /* Contact Cards */
+        .contact-card {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .contact-card:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 12px 48px rgba(99, 102, 241, 0.15);
+        }
+
+        .card-header-contact {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .card-header-contact i {
+            font-size: 1.5rem;
+            color: #6366f1;
+        }
+
+        .card-header-contact h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        /* Login Alert */
+        .login-alert {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-alert i {
+            color: #ef4444;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+            margin-top: 0.25rem;
+        }
+
+        .login-alert strong {
+            display: block;
+            color: #ef4444;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .login-alert p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .login-alert a {
+            color: #6366f1;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+
+        /* Form Styles */
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-group label i {
+            color: #6366f1;
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            font-size: 1rem;
+            color: var(--text-primary);
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            background: rgba(15, 23, 42, 0.8);
+        }
+
+        .form-input:disabled,
+        .form-input:read-only {
+            background: rgba(15, 23, 42, 0.3);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .form-textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(99, 102, 241, 0.4);
+        }
+
+        .submit-btn:disabled {
+            background: rgba(100, 116, 139, 0.3);
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Contact Info List */
+        .contact-info-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .contact-info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .contact-info-item:hover {
+            background: rgba(15, 23, 42, 0.6);
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateX(5px);
+        }
+
+        .contact-info-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border-radius: 12px;
+            color: white;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .contact-info-content h3 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .contact-info-content p {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        /* Social Section */
+        .social-section {
+            padding-top: 2rem;
+            border-top: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .social-section h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .social-icon {
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .social-icon:hover {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+            border-color: transparent;
+        }
+
+        /* Nav Actions - Right Section */
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            justify-content: flex-end;
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            background: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .theme-toggle:hover {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+        }
+
+        /* Logout Button */
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1.25rem;
+            background: transparent;
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+
+        .logout-btn:hover {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+        }
+
+        /* Notification Bell Styles */
+        .notification-wrapper {
+            position: relative;
+        }
+
+        .notification-bell {
+            position: relative;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .notification-bell:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #ef4444;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.15rem 0.4rem;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+
+        .notification-dropdown {
+            position: absolute;
+            top: calc(100% + 0.5rem);
+            right: 0;
+            width: 480px;
+            max-height: 600px;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .notification-dropdown.active {
+            display: flex;
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .notification-header h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .mark-all-read {
+            background: none;
+            border: none;
+            color: #6366f1;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .mark-all-read:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .notification-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .notification-item:hover {
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .notification-item.unread {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .notification-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .notification-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .notification-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .notification-message {
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .notification-reply {
+            padding: 0.75rem;
+            background: rgba(99, 102, 241, 0.15);
+            border-left: 3px solid #6366f1;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        .notification-reply-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #6366f1;
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-empty {
+            padding: 3rem 1rem;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .notification-empty i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .notification-empty p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        /* Light Theme Styles */
+        body.light-theme .contact-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        body.light-theme .contact-card:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 12px 48px rgba(99, 102, 241, 0.2);
+        }
+
+        body.light-theme .card-header-contact {
+            border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        body.light-theme .card-header-contact h2 {
+            color: #1e293b;
+        }
+
+        body.light-theme .form-group label {
+            color: #1e293b;
+        }
+
+        body.light-theme .form-input {
+            background: rgba(241, 245, 249, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            color: #1e293b;
+        }
+
+        body.light-theme .form-input::placeholder {
+            color: #64748b;
+        }
+
+        body.light-theme .form-input:focus {
+            background: rgba(241, 245, 249, 1);
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        body.light-theme .form-input:disabled,
+        body.light-theme .form-input:read-only {
+            background: rgba(226, 232, 240, 0.5);
+            color: #94a3b8;
+        }
+
+        body.light-theme .contact-info-item {
+            background: rgba(241, 245, 249, 0.6);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+        }
+
+        body.light-theme .contact-info-item:hover {
+            background: rgba(241, 245, 249, 0.9);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        body.light-theme .contact-info-content h3 {
+            color: #64748b;
+        }
+
+        body.light-theme .contact-info-content p {
+            color: #1e293b;
+        }
+
+        body.light-theme .social-section {
+            border-top: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        body.light-theme .social-section h3 {
+            color: #1e293b;
+        }
+
+        body.light-theme .social-icon {
+            background: rgba(241, 245, 249, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            color: #1e293b;
+        }
+
+        body.light-theme .social-icon:hover {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        body.light-theme .login-alert {
+            background: rgba(254, 226, 226, 0.8);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        body.light-theme .login-alert p {
+            color: #475569;
+        }
+
+        body.light-theme .submit-btn:disabled {
+            background: rgba(203, 213, 225, 0.8);
+            color: #94a3b8;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .contact-section {
+                padding: 100px 1rem 3rem;
+            }
+
+            .section-heading {
+                font-size: 2rem;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+
+    <!-- tsParticles Library -->
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
+
+    <!-- JavaScript -->
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+
+        // Load saved theme or default to dark
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        if (savedTheme === 'light') {
+            body.classList.add('light-theme');
+        }
+        updateThemeIcon(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('light-theme');
+            const newTheme = body.classList.contains('light-theme') ? 'light' : 'dark';
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        function updateThemeIcon(theme) {
+            const icon = themeToggle.querySelector('i');
+            icon.className = theme === 'light' ? 'fas fa-moon' : 'fas fa-sun';
+        }
+
+        // Initialize tsParticles
+        tsParticles.load("tsparticles", {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: "#6366f1" },
+                shape: { type: "circle" },
+                opacity: { value: 0.4, random: true },
+                size: { value: 6, random: true },
+                line_linked: {
+                    enable: false
+                },
+                move: {
+                    enable: true,
+                    speed: 1,
+                    direction: "none",
+                    random: false,
+                    straight: false,
+                    out_mode: "out",
+                    bounce: false
+                }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: {
+                    onhover: { enable: true, mode: "repulse" },
+                    onclick: { enable: true, mode: "push" },
+                    resize: true
+                },
+                modes: {
+                    repulse: { distance: 100, duration: 0.4 },
+                    push: { particles_nb: 4 }
+                }
+            },
+            retina_detect: true
+        });
+
+        // Contact Form Submission
+        const contactForm = document.getElementById('contactForm');
+        const submitBtn = contactForm.querySelector('.submit-btn');
+
+        contactForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const message = document.getElementById('message').value.trim();
+
+            if (!message) {
+                alert('Please enter a message.');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            const btnText = submitBtn.querySelector('span');
+            const originalText = btnText.textContent;
+            btnText.textContent = 'Sending...';
+
+            try {
+                const response = await fetch('/contact/message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(data.message);
+                    document.getElementById('message').value = '';
+                    btnText.textContent = originalText;
+                } else {
+                    alert(data.message || 'Failed to send message. Please try again.');
+                    submitBtn.disabled = false;
+                    btnText.textContent = originalText;
+                }
+            } catch (error) {
+                console.error('Error sending message:', error);
+                alert('An error occurred. Please try again.');
+                submitBtn.disabled = false;
+                btnText.textContent = originalText;
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Notification System (only for logged-in users)
+        const isLoggedIn = {{ 'true' if is_logged_in else 'false' }};
+
+        if (isLoggedIn) {
+            let notificationDropdownOpen = false;
+
+            async function fetchNotificationCount() {
+                try {
+                    const response = await fetch('/api/notifications/count');
+                    const data = await response.json();
+
+                    if (data.success && data.unread_count > 0) {
+                        document.getElementById('notificationBadge').textContent = data.unread_count;
+                        document.getElementById('notificationBadge').style.display = 'block';
+                    } else {
+                        document.getElementById('notificationBadge').style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Error fetching notification count:', error);
+                }
+            }
+
+            async function fetchNotifications() {
+                try {
+                    const response = await fetch('/api/notifications');
+                    const data = await response.json();
+
+                    const notificationList = document.getElementById('notificationList');
+
+                    if (data.success && data.notifications.length > 0) {
+                        notificationList.innerHTML = data.notifications.map(notif => `
+                            <div class="notification-item ${!notif.read ? 'unread' : ''}">
+                                <div class="notification-item-header">
+                                    <span class="notification-title">Reply from ${notif.replied_by}</span>
+                                    <span class="notification-time">${notif.replied_at}</span>
+                                </div>
+                                <div class="notification-message">
+                                    <strong>Your message:</strong> ${notif.message.substring(0, 100)}${notif.message.length > 100 ? '...' : ''}
+                                </div>
+                                <div class="notification-reply">
+                                    <div class="notification-reply-label">Admin Reply:</div>
+                                    ${notif.admin_reply}
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        notificationList.innerHTML = `
+                            <div class="notification-empty">
+                                <i class="fas fa-bell-slash"></i>
+                                <p>No notifications</p>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Error fetching notifications:', error);
+                }
+            }
+
+            document.getElementById('notificationBell').addEventListener('click', async () => {
+                const dropdown = document.getElementById('notificationDropdown');
+                notificationDropdownOpen = !notificationDropdownOpen;
+
+                if (notificationDropdownOpen) {
+                    dropdown.classList.add('active');
+                    await fetchNotifications();
+                } else {
+                    dropdown.classList.remove('active');
+                }
+            });
+
+            document.getElementById('markAllRead').addEventListener('click', async () => {
+                try {
+                    const response = await fetch('/api/notifications/mark-read', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        document.querySelectorAll('.notification-item').forEach(item => {
+                            item.classList.remove('unread');
+                        });
+                        document.getElementById('notificationBadge').style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Error marking notifications as read:', error);
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                const wrapper = document.querySelector('.notification-wrapper');
+                if (wrapper && !wrapper.contains(e.target) && notificationDropdownOpen) {
+                    document.getElementById('notificationDropdown').classList.remove('active');
+                    notificationDropdownOpen = false;
+                }
+            });
+
+            fetchNotificationCount();
+            setInterval(fetchNotificationCount, 30000);
+        }
+    </script>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <i class="fas fa-shield-halved"></i>
+                    <span>SafeNet AI</span>
+                </div>
+                <p class="footer-tagline">AI-Powered Phishing Detection System</p>
+
+                <!-- Technology Stack -->
+                <div class="footer-tech-stack">
+                    <a href="https://en.wikipedia.org/wiki/Python_(programming_language)" target="_blank"
+                        rel="noopener noreferrer" title="Learn about Python">
+                        <span><i class="fab fa-python"></i> Python</span>
+                    </a>
+                    <a href="https://en.wikipedia.org/wiki/Flask_(web_framework)" target="_blank"
+                        rel="noopener noreferrer" title="Learn about Flask">
+                        <span><i class="fas fa-flask"></i> Flask</span>
+                    </a>
+                    <a href="https://en.wikipedia.org/wiki/Machine_learning" target="_blank" rel="noopener noreferrer"
+                        title="Learn about Machine Learning">
+                        <span><i class="fas fa-brain"></i> Machine Learning</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="/#features">Features</a></li>
+                        <li><a href="/#how-it-works">How It Works</a></li>
+                        <li><a href="/#about">About</a></li>
+                        <li><a href="/contact">Contact</a></li>
+                        {% if not is_logged_in %}
+                        <li><a href="/login">Login</a></li>
+                        <li><a href="/register">Sign Up</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h4>Legal &amp; Support</h4>
+                    <ul>
+                        <li><a href="/terms">Terms &amp; Conditions</a></li>
+                        <li><a href="/privacy">Privacy Policy</a></li>
+                        <li><a href="/faq">FAQ</a></li>
+                        <li><a href="/disclaimer">Disclaimer</a></li>
+                    </ul>
+                </div>
+
+                <!-- Newsletter Subscription -->
+                <div class="footer-newsletter">
+                    <h4>Subscribe to our newsletter</h4>
+                    <p class="footer-newsletter-model">
+                        <i class="fas fa-brain"></i>
+                        Powered by Logistic Regression &mdash; 100% detection accuracy
+                    </p>
+                    <p class="footer-newsletter-desc">The latest news, articles, and resources, sent to your inbox
+                        weekly.</p>
+                    <form class="footer-newsletter-form" onsubmit="handleNewsletterSubmit(event)">
+                        <input type="email" class="footer-newsletter-input" placeholder="Enter your email" required>
+                        <button type="submit" class="footer-newsletter-btn">Subscribe</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="footer-container footer-container-centered">
+                <p>&copy; 2026 SafeNet AI. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Global Keyboard Shortcuts -->
+    <script src="{{ url_for('static', filename='js/global-shortcuts.js') }}"></script>
+</body>
+
+</html>

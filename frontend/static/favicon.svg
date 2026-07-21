@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+      <feOffset dx="0" dy="2" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.3"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background with rounded corners -->
+  <rect width="512" height="512" rx="100" fill="#0f172a"/>
+  
+  <!-- Shield background -->
+  <path d="M 256 80 L 180 120 L 180 240 C 180 320 220 380 256 420 C 292 380 332 320 332 240 L 332 120 Z" 
+        fill="rgba(99, 102, 241, 0.1)" 
+        stroke="url(#grad1)" 
+        stroke-width="4"/>
+  
+  <!-- Letter S -->
+  <text x="256" y="340" 
+        font-family="Arial, Helvetica, sans-serif" 
+        font-size="280" 
+        font-weight="900" 
+        fill="url(#grad1)" 
+        text-anchor="middle"
+        filter="url(#shadow)">S</text>
+</svg>

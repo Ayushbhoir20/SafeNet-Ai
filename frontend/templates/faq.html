@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SafeNet AI FAQ - Frequently asked questions about our phishing detection system.">
+    <title>FAQ | SafeNet AI</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Favicons (multiple formats for browser compatibility) -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='favicon.png') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='favicon.png') }}">
+
+
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/legal.css') }}">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <!-- Left Section: Brand -->
+            <div class="nav-left">
+                <div class="nav-brand">
+                    <i class="fas fa-shield-halved"></i>
+                    <span>SafeNet AI</span>
+                </div>
+            </div>
+
+            <!-- Center Section: Menu Links -->
+            <div class="nav-center">
+                <ul class="nav-menu">
+                    <li><a href="/" class="nav-link">Home</a></li>
+                    {% if is_logged_in %}
+                    <li><a href="/dashboard" class="nav-link">Dashboard</a></li>
+                    <li><a href="/scan" class="nav-link">Scan</a></li>
+                    {% endif %}
+                    <li><a href="/#features" class="nav-link">Features</a></li>
+                    <li><a href="/#how-it-works" class="nav-link">How It Works</a></li>
+                    <li><a href="/#about" class="nav-link">About</a></li>
+                </ul>
+            </div>
+
+            <!-- Right Section: Actions -->
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                {% if is_logged_in %}
+                <a href="/logout" class="logout-btn" aria-label="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+                {% else %}
+                <a href="/login" class="logout-btn" aria-label="Login">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Login</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Legal Page Content -->
+    <div class="legal-page">
+        <div class="legal-container">
+            <!-- Header -->
+            <div class="legal-header">
+                <h1 class="legal-title">Frequently Asked Questions</h1>
+                <p class="legal-subtitle">Find answers to common questions about SafeNet AI</p>
+            </div>
+
+            <!-- FAQ Content -->
+            <div class="legal-content">
+                <!-- FAQ 1 -->
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>What is SafeNet AI?</span>
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>
+                            SafeNet AI is an advanced AI-powered phishing detection system that analyzes URLs to
+                            identify potential phishing threats. It uses a three-layer detection approach combining
+                            machine learning classification, WHOIS metadata analysis, and real-time blacklist
+                            verification to provide accurate and reliable phishing detection.
+                        </p>
+                        <p>
+                            The system is designed for educational purposes, academic research, and security assistance,
+                            making it suitable for students, researchers, and security professionals.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FAQ 2 -->
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How does phishing detection work?</span>
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>
+                            SafeNet AI uses a tiered detection approach with three layers:
+                        </p>
+                        <p>
+                            <strong>Layer 1 - ML Detection:</strong> A Random Forest machine learning model analyzes URL
+                            features, domain characteristics, and behavioral patterns to classify URLs as Safe,
+                            Suspicious, or Phishing with a confidence score.
+                        </p>
+                        <p>
+                            <strong>Layer 2 - Blacklist Check:</strong> URLs are cross-referenced against known phishing
+                            databases (PhishTank) to immediately flag blacklisted sites.
+                        </p>
+                        <p>
+                            <strong>Layer 3 - Content Analysis:</strong> For suspicious URLs, the system performs
+                            lightweight content analysis to detect phishing indicators like fake login forms, brand
+                            impersonation, and suspicious keywords.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FAQ 3 -->
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Is my data stored? What about privacy?</span>
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>
+                            <strong>For Registered Users:</strong> If you create an account, your scan history is stored
+                            in our database so you can view past scans and statistics in your dashboard. We store URLs
+                            you scan, detection results, and timestamps.
+                        </p>
+                        <p>
+                            <strong>Privacy Commitment:</strong> We do NOT track your personal identity, browsing
+                            history, or any data beyond what's necessary for phishing detection. We do not sell your
+                            data to third parties. See our <a href="/privacy">Privacy Policy</a> for complete details.
+                        </p>
+                        <p>
+                            <strong>Security:</strong> All passwords are hashed using bcrypt, and data is transmitted
+                            over HTTPS encryption.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FAQ 4 -->
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Can SafeNet AI make mistakes?</span>
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>
+                            Yes. While SafeNet AI achieves high accuracy (95%+), AI predictions are probabilistic and
+                            not absolute guarantees. Two types of errors can occur:
+                        </p>
+                        <p>
+                            <strong>False Positives:</strong> Legitimate websites incorrectly flagged as phishing. This
+                            can happen with new domains, unusual URL patterns, or sites with suspicious-looking
+                            features.
+                        </p>
+                        <p>
+                            <strong>False Negatives:</strong> Phishing sites not detected. Sophisticated phishing
+                            attacks using new techniques may evade detection.
+                        </p>
+                        <p>
+                            <strong>Recommendation:</strong> Use SafeNet AI as one component of your security strategy.
+                            For critical decisions, verify results independently and exercise caution with suspicious
+                            URLs.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FAQ 5 -->
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Is this suitable for academic projects?</span>
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>
+                            Absolutely! SafeNet AI is designed with academic use in mind and is perfect for:
+                        </p>
+                        <ul>
+                            <li><strong>Final Year Projects:</strong> Demonstrates real-world application of machine
+                                learning in cybersecurity</li>
+                            <li><strong>Research Papers:</strong> Provides a working implementation of tiered phishing
+                                detection</li>
+                            <li><strong>Coursework:</strong> Shows integration of ML, web development, and database
+                                management</li>
+                            <li><strong>Presentations:</strong> Professional UI suitable for demonstrations and
+                                evaluations</li>
+                        </ul>
+                        <p>
+                            The system includes comprehensive documentation, clean code structure, and production-ready
+                            features that meet academic and industry standards.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FAQ 6 -->
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Is SafeNet AI free to use?</span>
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>
+                            Yes! SafeNet AI is currently free to use for educational, research, and personal security
+                            purposes. You can:
+                        </p>
+                        <ul>
+                            <li>Create a free account</li>
+                            <li>Scan unlimited URLs</li>
+                            <li>Access your scan history and dashboard</li>
+                            <li>Use all detection features</li>
+                        </ul>
+                        <p>
+                            We may introduce premium features or enterprise plans in the future, but the core phishing
+                            detection functionality will remain accessible.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FAQ 7 -->
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>What technology stack does SafeNet AI use?</span>
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>
+                            SafeNet AI is built using modern, industry-standard technologies:
+                        </p>
+                        <ul>
+                            <li><strong>Backend:</strong> Python with Flask framework</li>
+                            <li><strong>Machine Learning:</strong> Scikit-learn (Random Forest classifier)</li>
+                            <li><strong>Database:</strong> MongoDB for user data and scan history</li>
+                            <li><strong>Frontend:</strong> HTML, CSS, JavaScript with responsive design</li>
+                            <li><strong>Security:</strong> Bcrypt password hashing, HTTPS encryption</li>
+                            <li><strong>APIs:</strong> WHOIS lookup, PhishTank blacklist integration</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- FAQ 8 -->
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How accurate is the detection?</span>
+                        <i class="fas fa-chevron-down faq-icon"></i>
+                    </div>
+                    <div class="faq-answer">
+                        <p>
+                            SafeNet AI's machine learning model achieves approximately <strong>95% accuracy</strong> on
+                            test datasets. The tiered detection approach further improves reliability by combining
+                            multiple detection methods.
+                        </p>
+                        <p>
+                            <strong>Performance Metrics:</strong>
+                        </p>
+                        <ul>
+                            <li>Accuracy: ~95%</li>
+                            <li>Precision: High (few false positives)</li>
+                            <li>Recall: High (catches most phishing sites)</li>
+                            <li>Real-time processing: Results in seconds</li>
+                        </ul>
+                        <p>
+                            Accuracy may vary based on the sophistication of phishing attacks and the novelty of
+                            techniques used.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Contact -->
+                <div class="legal-contact">
+                    <h3>Still Have Questions?</h3>
+                    <p>If you couldn't find the answer you're looking for, feel free to contact us:</p>
+                    <p><a href="mailto:support@safenetai.com">support@safenetai.com</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    {% include 'partials/footer.html' %}
+
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/legal.js') }}"></script>
+    <script>
+        // FAQ Accordion functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const faqItems = document.querySelectorAll('.faq-item');
+
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+
+                question.addEventListener('click', () => {
+                    // Close other items
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item && otherItem.classList.contains('active')) {
+                            otherItem.classList.remove('active');
+                        }
+                    });
+
+                    // Toggle current item
+                    item.classList.toggle('active');
+                });
+            });
+        });
+    </script>
+
+    <!-- Global Keyboard Shortcuts -->
+    <script src="{{ url_for('static', filename='js/global-shortcuts.js') }}"></script>
+</body>
+
+</html>

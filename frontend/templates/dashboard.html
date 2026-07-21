@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SafeNet AI Dashboard - Monitor your URL security activity">
+    <title>Dashboard | SafeNet AI</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Favicons (multiple formats for browser compatibility) -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='favicon.png') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='favicon.png') }}">
+
+
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <!-- Left Section: Brand -->
+            <div class="nav-left">
+                <div class="nav-brand">
+                    <i class="fas fa-shield-halved"></i>
+                    <span>SafeNet AI</span>
+                    {% if user_plan and user_plan != 'free' %}
+                    {% if user_plan == 'basic' %}
+                    <span class="plan-badge basic">BASIC</span>
+                    {% elif user_plan == 'pro' %}
+                    <span class="plan-badge pro">PRO</span>
+                    {% elif user_plan == 'pro_plus' %}
+                    <span class="plan-badge pro-plus">PRO+</span>
+                    {% elif user_plan == 'enterprise' %}
+                    <span class="plan-badge enterprise">ENTERPRISE</span>
+                    {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Center Section: Menu Links -->
+            <div class="nav-center">
+                <ul class="nav-menu">
+                    <li><a href="/" class="nav-link">Home</a></li>
+                    <li><a href="/dashboard" class="nav-link active">Dashboard</a></li>
+                    <li><a href="/scan" class="nav-link">Scan</a></li>
+                </ul>
+            </div>
+
+            <!-- Right Section: Actions -->
+            <div class="nav-right">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Dashboard Container -->
+    <main class="dashboard-container">
+        <!-- Header Section -->
+        <header class="dashboard-header fade-in-up">
+            <div class="header-content">
+                <h1 class="welcome-text">Welcome back, <span class="user-name">{{ user_email.split('@')[0] if user_email
+                        else 'User' }}</span> </h1>
+                <p class="header-subtitle">Here's an overview of your URL security activity</p>
+            </div>
+            <div class="header-actions">
+                <button class="download-report-btn {{ 'locked' if user_plan == 'free' and has_downloaded_report }}"
+                    id="downloadReportBtn" aria-label="Download Report" {% if user_plan=='free' and
+                    has_downloaded_report %} disabled
+                    title="Free plan allows only one report download. Upgrade to continue." {% endif %}>
+                    {% if user_plan == 'free' and has_downloaded_report %}
+                    <i class="fas fa-lock"></i>
+                    {% else %}
+                    <i class="fas fa-file-pdf"></i>
+                    {% endif %}
+                    <span>Download Report</span>
+                </button>
+                <div class="header-date">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span id="currentDate"></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Summary Cards Section -->
+        <section class="summary-section fade-in-up delay-1">
+            <div class="summary-grid">
+                <!-- Total URLs Scanned -->
+                <a href="/dashboard?filter=all&view=full"
+                    class="summary-card clickable {{ 'active' if active_filter == 'all' else '' }}">
+                    <div class="card-icon blue">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-value">{{ total_scans }}</h3>
+                        <p class="card-label">Total URLs Scanned</p>
+                    </div>
+                </a>
+
+                <!-- Phishing URLs Detected -->
+                <a href="/dashboard?filter=phishing&view=full"
+                    class="summary-card clickable {{ 'active' if active_filter == 'phishing' else '' }}">
+                    <div class="card-icon red">
+                        <i class="fas fa-bug"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-value">{{ phishing_count }}</h3>
+                        <p class="card-label">Phishing URLs Detected</p>
+                    </div>
+                </a>
+
+                <!-- Legitimate URLs -->
+                <a href="/dashboard?filter=legitimate&view=full"
+                    class="summary-card clickable {{ 'active' if active_filter == 'legitimate' else '' }}">
+                    <div class="card-icon green">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-value">{{ legitimate_count }}</h3>
+                        <p class="card-label">Legitimate URLs</p>
+                    </div>
+                </a>
+
+                <!-- Last Scan -->
+                <div class="summary-card">
+                    <div class="card-icon purple">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-value time-value">{{ last_scan_time }}</h3>
+                        <p class="card-label">Last Scan</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Content Grid -->
+        <div class="content-grid fade-in-up delay-2">
+            <!-- Recent Scan History -->
+            <section class="history-section">
+                <div class="section-header">
+                    <h2>
+                        <i class="fas fa-history"></i>
+                        {% if is_recent_view %}
+                        Recent Scan History
+                        {% elif active_filter == 'all' %}
+                        All Scanned URLs
+                        {% elif active_filter == 'phishing' %}
+                        Phishing URLs
+                        {% elif active_filter == 'legitimate' %}
+                        Legitimate URLs
+                        {% else %}
+                        Scan History
+                        {% endif %}
+                        <span class="filter-badge {{ 'recent' if is_recent_view else 'full' }}">
+                            {% if is_recent_view %}
+                            Showing recent activity
+                            {% else %}
+                            Showing all {{ recent_scans|length }} scans
+                            {% endif %}
+                        </span>
+                    </h2>
+                    {% if not is_recent_view %}
+                    <a href="/dashboard" class="back-to-recent">
+                        <i class="fas fa-arrow-left"></i> Back to recent
+                    </a>
+                    {% endif %}
+                </div>
+                <div class="history-table-wrapper">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>URL</th>
+                                <th>Result</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if recent_scans %}
+                            {% for scan in recent_scans %}
+                            <tr class="table-row">
+                                <td class="url-cell">
+                                    <i class="fas fa-globe"></i>
+                                    <span class="url-text">{{ scan.url[:50] }}{% if scan.url|length > 50 %}...{% endif
+                                        %}</span>
+                                </td>
+                                <td>
+                                    <span
+                                        class="result-badge {{ 'safe' if scan.result == 'Legitimate' else 'phishing' if scan.result == 'Phishing' else 'suspicious' }}">
+                                        <i
+                                            class="fas {{ 'fa-check-circle' if scan.result == 'Legitimate' else 'fa-exclamation-triangle' if scan.result == 'Suspicious' else 'fa-times-circle' }}"></i>
+                                        {{ scan.result }}
+                                    </span>
+                                </td>
+                                <td class="date-cell">{{ scan.date }}</td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr class="table-row empty-row">
+                                <td colspan="3" class="empty-message">
+                                    <i class="fas fa-search"></i>
+                                    <span>No scans yet. Start scanning URLs to see your history.</span>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Right Sidebar -->
+            <aside class="sidebar">
+                <!-- Security Engine Status -->
+                <div class="status-card minimal">
+                    <div class="status-header centered">
+                        <span class="status-badge active">
+                            <span class="pulse-dot"></span>
+                            Security Engine Active
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="actions-card">
+                    <a href="/scan" class="action-btn primary large">
+                        <i class="fas fa-search"></i>
+                        <span>Scan New URL</span>
+                    </a>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- Download Report Modal -->
+    <div class="modal-overlay" id="reportModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2>
+                    <i class="fas fa-file-pdf"></i>
+                    Download Scan Report
+                </h2>
+                <button class="modal-close" id="closeModalBtn" aria-label="Close modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <p class="modal-description">
+                    Generate a professional PDF report of your scan history with customizable filters.
+                </p>
+
+                <!-- Report Type Selection -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-filter"></i>
+                        Report Type
+                    </label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="reportType" value="all" checked>
+                            <span class="radio-label">
+                                <i class="fas fa-globe"></i>
+                                All Scanned URLs
+                            </span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="reportType" value="phishing">
+                            <span class="radio-label">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Only Phishing URLs
+                            </span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="reportType" value="legitimate">
+                            <span class="radio-label">
+                                <i class="fas fa-check-circle"></i>
+                                Only Legitimate URLs
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Date Range Selection -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-calendar-alt"></i>
+                        Date Range
+                    </label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="dateRange" value="7">
+                            <span class="radio-label">Last 7 days</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="dateRange" value="30">
+                            <span class="radio-label">Last 30 days</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="dateRange" value="all" checked>
+                            <span class="radio-label">All time</span>
+                        </label>
+                    </div>
+                </div>
+
+
+                <!-- File Format Selection -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-file"></i>
+                        File Format
+                    </label>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="fileFormat" value="pdf" checked>
+                            <span class="radio-label">
+                                <i class="fas fa-file-pdf"></i>
+                                PDF (Portable Document Format)
+                            </span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="fileFormat" value="docx">
+                            <span class="radio-label">
+                                <i class="fas fa-file-word"></i>
+                                Word (Microsoft Word Document)
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+
+                <!-- Premium Feature Notice -->
+                {% if user_plan == 'free' %}
+                <div class="premium-notice">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        <strong>Free Plan Limitation:</strong>
+                        <p>Your report will include only the last 10 scans. Upgrade to Pro or Pro+ to export all scans.
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn-secondary" id="cancelBtn">Cancel</button>
+                <button class="btn-primary" id="generateReportBtn">
+                    <i class="fas fa-download"></i>
+                    Generate Report
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="dashboard-footer fade-in-up delay-3">
+        <p>🛡️ Secure access powered by SafeNet AI</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        body.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        });
+
+        function updateThemeIcon(theme) {
+            const icon = themeToggle.querySelector('i');
+            if (theme === 'dark') {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        }
+
+        // Current Date
+        const dateElement = document.getElementById('currentDate');
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        dateElement.textContent = new Date().toLocaleDateString('en-US', options);
+
+        // Animated Counter Effect
+        function animateCounter(element, target, duration = 1000) {
+            let start = 0;
+            const increment = target / (duration / 16);
+
+            function updateCounter() {
+                start += increment;
+                if (start < target) {
+                    element.textContent = Math.floor(start);
+                    requestAnimationFrame(updateCounter);
+                } else {
+                    element.textContent = target;
+                }
+            }
+
+            if (target > 0) {
+                updateCounter();
+            }
+        }
+
+        // Animate all card values on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const cardValues = document.querySelectorAll('.card-value:not(.time-value)');
+            cardValues.forEach(card => {
+                const target = parseInt(card.textContent) || 0;
+                if (target > 0) {
+                    card.textContent = '0';
+                    setTimeout(() => animateCounter(card, target, 800), 300);
+                }
+            });
+        });
+
+        // ========== DOWNLOAD REPORT MODAL ==========
+        const reportModal = document.getElementById('reportModal');
+        const downloadReportBtn = document.getElementById('downloadReportBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const generateReportBtn = document.getElementById('generateReportBtn');
+
+        // Open modal
+        downloadReportBtn.addEventListener('click', () => {
+            reportModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+
+        // Close modal functions
+        function closeModal() {
+            reportModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        closeModalBtn.addEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
+
+        // Close on overlay click
+        reportModal.addEventListener('click', (e) => {
+            if (e.target === reportModal) {
+                closeModal();
+            }
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && reportModal.classList.contains('active')) {
+                closeModal();
+            }
+        });
+
+        // Generate Report
+        generateReportBtn.addEventListener('click', async () => {
+            // Get selected options
+            const reportType = document.querySelector('input[name="reportType"]:checked').value;
+            const dateRange = document.querySelector('input[name="dateRange"]:checked').value;
+            const fileFormat = document.querySelector('input[name="fileFormat"]:checked').value;
+
+            // Show loading state
+            const originalText = generateReportBtn.innerHTML;
+            generateReportBtn.disabled = true;
+            generateReportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+
+            try {
+                // Build API URL with format parameter
+                const apiUrl = `/api/download-report?type=${reportType}&range=${dateRange}&format=${fileFormat}`;
+
+                // Fetch the report
+                const response = await fetch(apiUrl);
+
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to generate report');
+                }
+
+                // Get the blob
+                const blob = await response.blob();
+
+                // Verify blob has content
+                if (!blob || blob.size === 0) {
+                    throw new Error('Report file is empty. Please try again.');
+                }
+
+                // Determine file extension
+                const extension = fileFormat === 'docx' ? 'docx' : 'pdf';
+                const formatName = fileFormat === 'docx' ? 'Word' : 'PDF';
+
+                // Generate filename with timestamp
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+                const filename = `SafeNet_AI_Report_${reportType}_${timestamp}.${extension}`;
+
+                // Create download link with improved handling
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = filename;
+
+                // Add to document, trigger click, then cleanup after delay
+                document.body.appendChild(a);
+
+                // Trigger download
+                a.click();
+
+                // Cleanup with delay to ensure download starts
+                setTimeout(() => {
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                }, 1000);
+
+                // Log for debugging
+                console.log(`✓ ${formatName} report downloaded:`, filename, `(${blob.size} bytes)`);
+
+                // Show success message
+                showToast(`Your ${formatName} report is ready for download`, 'success');
+
+                // Close modal
+                closeModal();
+
+            } catch (error) {
+                console.error('Error generating report:', error);
+                showToast(error.message || 'Failed to generate report. Please try again.', 'error');
+            } finally {
+                // Restore button state
+                generateReportBtn.disabled = false;
+                generateReportBtn.innerHTML = originalText;
+            }
+        });
+
+        // Toast notification function
+        function showToast(message, type = 'info') {
+            // Remove existing toast if any
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            // Create toast element
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+
+            const icon = type === 'success' ? 'fa-check-circle' :
+                type === 'error' ? 'fa-exclamation-circle' :
+                    'fa-info-circle';
+
+            toast.innerHTML = `
+                <i class="fas ${icon}"></i>
+                <span>${message}</span>
+            `;
+
+            document.body.appendChild(toast);
+
+            // Trigger animation
+            setTimeout(() => toast.classList.add('show'), 10);
+
+            // Auto remove after 4 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+    </script>
+
+    <!-- Global Keyboard Shortcuts -->
+    <script src="{{ url_for('static', filename='js/global-shortcuts.js') }}"></script>
+</body>
+
+</html>

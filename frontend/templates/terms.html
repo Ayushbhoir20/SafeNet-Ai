@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="SafeNet AI Terms & Conditions - Legal terms for using our AI-powered phishing detection service.">
+    <title>Terms & Conditions | SafeNet AI</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Favicons (multiple formats for browser compatibility) -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='favicon.png') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='favicon.png') }}">
+
+
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/legal.css') }}">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <!-- Left Section: Brand -->
+            <div class="nav-left">
+                <div class="nav-brand">
+                    <i class="fas fa-shield-halved"></i>
+                    <span>SafeNet AI</span>
+                </div>
+            </div>
+
+            <!-- Center Section: Menu Links -->
+            <div class="nav-center">
+                <ul class="nav-menu">
+                    <li><a href="/" class="nav-link">Home</a></li>
+                    {% if is_logged_in %}
+                    <li><a href="/dashboard" class="nav-link">Dashboard</a></li>
+                    <li><a href="/scan" class="nav-link">Scan</a></li>
+                    {% endif %}
+                    <li><a href="/#features" class="nav-link">Features</a></li>
+                    <li><a href="/#how-it-works" class="nav-link">How It Works</a></li>
+                    <li><a href="/#about" class="nav-link">About</a></li>
+                </ul>
+            </div>
+
+            <!-- Right Section: Actions -->
+            <div class="nav-actions">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                {% if is_logged_in %}
+                <a href="/logout" class="logout-btn" aria-label="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+                {% else %}
+                <a href="/login" class="logout-btn" aria-label="Login">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Login</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Legal Page Content -->
+    <div class="legal-page">
+        <div class="legal-container">
+            <!-- Header -->
+            <div class="legal-header">
+                <h1 class="legal-title">Terms & Conditions</h1>
+                <p class="legal-subtitle">Please read these terms carefully before using SafeNet AI</p>
+                <p class="legal-date">Last Updated: January 2026</p>
+            </div>
+
+            <!-- Content -->
+            <div class="legal-content">
+                <!-- Section 1 -->
+                <div class="legal-section">
+                    <h2>1. Acceptance of Terms</h2>
+                    <p>
+                        By accessing and using SafeNet AI, you accept and agree to be bound by the terms and provisions
+                        of this agreement. If you do not agree to these Terms & Conditions, please do not use this
+                        service.
+                    </p>
+                    <p>
+                        SafeNet AI is an AI-powered phishing detection system designed for educational, research, and
+                        security assistance purposes. Your use of this platform constitutes your acceptance of these
+                        terms.
+                    </p>
+                </div>
+
+                <!-- Section 2 -->
+                <div class="legal-section">
+                    <h2>2. Use of Service</h2>
+                    <p>
+                        SafeNet AI provides URL analysis and phishing detection services using machine learning models,
+                        WHOIS data, and blacklist verification. You agree to use this service:
+                    </p>
+                    <ul>
+                        <li>For legitimate security analysis and educational purposes only</li>
+                        <li>In compliance with all applicable local, state, national, and international laws</li>
+                        <li>Without attempting to bypass, disable, or interfere with the system's security features</li>
+                        <li>Without submitting malicious content designed to harm the system or other users</li>
+                    </ul>
+                </div>
+
+                <!-- Section 3 -->
+                <div class="legal-section">
+                    <h2>3. AI-Based Analysis Disclaimer</h2>
+                    <div class="legal-highlight">
+                        <p>
+                            <strong>Important:</strong> SafeNet AI uses artificial intelligence and machine learning
+                            algorithms to analyze URLs. While our system achieves high accuracy, AI predictions are
+                            probabilistic in nature and not absolute guarantees.
+                        </p>
+                    </div>
+                    <p>
+                        The detection results provided by SafeNet AI are based on:
+                    </p>
+                    <ul>
+                        <li>Machine learning classification models</li>
+                        <li>Domain and WHOIS metadata analysis</li>
+                        <li>Real-time blacklist verification</li>
+                        <li>Content analysis for suspicious URLs</li>
+                    </ul>
+                </div>
+
+                <!-- Section 4 -->
+                <div class="legal-section">
+                    <h2>4. No Guarantee of Absolute Accuracy</h2>
+                    <p>
+                        While SafeNet AI strives for high accuracy in phishing detection, we do not guarantee 100%
+                        accuracy. False positives (legitimate sites flagged as phishing) and false negatives (phishing
+                        sites not detected) may occur.
+                    </p>
+                    <p>
+                        Users should:
+                    </p>
+                    <ul>
+                        <li>Use SafeNet AI as one component of a comprehensive security strategy</li>
+                        <li>Verify critical decisions independently</li>
+                        <li>Exercise caution when dealing with suspicious URLs</li>
+                        <li>Not rely solely on automated detection for high-stakes security decisions</li>
+                    </ul>
+                </div>
+
+                <!-- Section 5 -->
+                <div class="legal-section">
+                    <h2>5. User Responsibility</h2>
+                    <p>
+                        You are solely responsible for:
+                    </p>
+                    <ul>
+                        <li>The URLs you submit for analysis</li>
+                        <li>Actions taken based on detection results</li>
+                        <li>Maintaining the confidentiality of your account credentials</li>
+                        <li>All activities that occur under your account</li>
+                        <li>Ensuring compliance with applicable laws in your jurisdiction</li>
+                    </ul>
+                </div>
+
+                <!-- Section 6 -->
+                <div class="legal-section">
+                    <h2>6. Limitation of Liability</h2>
+                    <p>
+                        SafeNet AI and its developers shall not be liable for:
+                    </p>
+                    <ul>
+                        <li>Any direct, indirect, incidental, or consequential damages arising from use of the service
+                        </li>
+                        <li>Losses resulting from reliance on detection results</li>
+                        <li>Security breaches or data loss not caused by our negligence</li>
+                        <li>Service interruptions, errors, or unavailability</li>
+                        <li>Third-party actions or content</li>
+                    </ul>
+                    <div class="legal-highlight">
+                        <p>
+                            This service is provided "as is" without warranties of any kind, either express or implied,
+                            including but not limited to warranties of merchantability, fitness for a particular
+                            purpose, or non-infringement.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Section 7 -->
+                <div class="legal-section">
+                    <h2>7. Modifications to Terms</h2>
+                    <p>
+                        SafeNet AI reserves the right to modify these Terms & Conditions at any time. Changes will be
+                        effective immediately upon posting to this page. Your continued use of the service after changes
+                        constitutes acceptance of the modified terms.
+                    </p>
+                    <p>
+                        We recommend reviewing this page periodically to stay informed of any updates.
+                    </p>
+                </div>
+
+                <!-- Section 8 -->
+                <div class="legal-section">
+                    <h2>8. Academic and Research Use</h2>
+                    <p>
+                        SafeNet AI is designed to support academic research and educational purposes. If you are using
+                        this platform for research or academic projects, you agree to:
+                    </p>
+                    <ul>
+                        <li>Properly cite and acknowledge SafeNet AI in your work</li>
+                        <li>Use the system ethically and responsibly</li>
+                        <li>Not misrepresent the capabilities or limitations of the system</li>
+                    </ul>
+                </div>
+
+                <!-- Section 9 -->
+                <div class="legal-section">
+                    <h2>9. Termination</h2>
+                    <p>
+                        We reserve the right to terminate or suspend access to SafeNet AI immediately, without prior
+                        notice or liability, for any reason, including but not limited to breach of these Terms &
+                        Conditions.
+                    </p>
+                </div>
+
+                <!-- Contact -->
+                <div class="legal-contact">
+                    <h3>Questions About These Terms?</h3>
+                    <p>If you have any questions about these Terms & Conditions, please contact us:</p>
+                    <p><a href="mailto:legal@safenetai.com">legal@safenetai.com</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    {% include 'partials/footer.html' %}
+
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/legal.js') }}"></script>
+</body>
+
+</html>

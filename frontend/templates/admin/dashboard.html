@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - SafeNet AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <style>
+        /* Clickable Users Card */
+        .stat-card.clickable {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .stat-card.clickable:hover {
+            transform: translateY(-6px);
+            border-color: var(--info-color);
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.25);
+        }
+
+        .stat-card.clickable .card-action {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.7rem;
+            color: var(--info-color);
+            margin-top: 0.5rem;
+            opacity: 0.8;
+            transition: all 0.2s ease;
+        }
+
+        .stat-card.clickable:hover .card-action {
+            opacity: 1;
+            gap: 0.5rem;
+        }
+
+        .stat-card.clickable .card-action i {
+            font-size: 0.65rem;
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card.clickable:hover .card-action i {
+            transform: translateX(3px);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Admin Sidebar -->
+    <aside class="admin-sidebar">
+        <div class="sidebar-brand">
+            <i class="fas fa-shield-halved"></i>
+            <span>SafeNet AI</span>
+        </div>
+        <div class="sidebar-badge">Admin Panel</div>
+
+        <nav class="sidebar-nav">
+            <a href="/admin/dashboard" class="nav-item active">
+                <i class="fas fa-chart-line"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/admin/sales" class="nav-item">
+                <i class="fas fa-money-bill-trend-up"></i>
+                <span>Sales & Revenue</span>
+            </a>
+            <a href="/admin/messages" class="nav-item">
+                <i class="fas fa-envelope"></i>
+                <span>Messages</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="admin-info">
+                <i class="fas fa-user-shield"></i>
+                <span>{{ admin_email }}</span>
+            </div>
+            <a href="/logout" class="logout-link">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+        <header class="admin-header">
+            <div class="header-left">
+                <h1>System Overview</h1>
+                <p>Real-time analytics from MongoDB</p>
+            </div>
+            <div class="header-right">
+                <span class="system-status active">
+                    <span class="pulse-dot"></span>
+                    System Active
+                </span>
+            </div>
+        </header>
+
+        <!-- Stats Cards -->
+        <section class="stats-grid">
+            <!-- Clickable Users Card -->
+            <div class="stat-card clickable" onclick="window.location.href='/admin/users'">
+                <div class="stat-icon users">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-value" data-count="{{ total_users }}">{{ total_users }}</h3>
+                    <p class="stat-label">Registered Users</p>
+                    <div class="card-action">
+                        <span>View Users</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon scans">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-value" data-count="{{ total_scans }}">{{ total_scans }}</h3>
+                    <p class="stat-label">Total Scans</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon phishing">
+                    <i class="fas fa-bug"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-value" data-count="{{ phishing_count }}">{{ phishing_count }}</h3>
+                    <p class="stat-label">Phishing Detected</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon legitimate">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 class="stat-value" data-count="{{ legitimate_count }}">{{ legitimate_count }}</h3>
+                    <p class="stat-label">Legitimate URLs</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Threat Intelligence - Full Width -->
+        <section class="admin-card threat-intel">
+            <div class="card-header">
+                <h2><i class="fas fa-radar"></i> Live Threat Intelligence</h2>
+                <span class="badge">Latest 15</span>
+            </div>
+            <div class="threat-table-wrapper">
+                <table class="threat-table">
+                    <thead>
+                        <tr>
+                            <th>URL</th>
+                            <th>Result</th>
+                            <th>User</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if recent_scans %}
+                        {% for scan in recent_scans %}
+                        <tr class="{% if scan.prediction in ['Phishing', 'phishing'] %}phishing-row{% endif %}">
+                            <td class="url-cell">
+                                <span class="url-text">{{ scan.url[:50] }}{% if scan.url|length > 50 %}...{% endif
+                                    %}</span>
+                            </td>
+                            <td>
+                                <span
+                                    class="result-badge {{ 'phishing' if scan.prediction in ['Phishing', 'phishing'] else 'safe' }}">
+                                    {{ scan.prediction }}
+                                </span>
+                            </td>
+                            <td class="user-cell">{{ scan.email if scan.email else 'Unknown' }}</td>
+                            <td class="date-cell">{{ scan.date if scan.date else 'Unknown' }}</td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="4" class="empty-cell">
+                                <div class="empty-message">
+                                    <i class="fas fa-inbox"></i>
+                                    <p>No scan activity yet</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Animated counters
+        document.querySelectorAll('.stat-value').forEach(counter => {
+            const target = parseInt(counter.dataset.count);
+            const duration = 1500;
+            const step = target / (duration / 16);
+            let current = 0;
+
+            const updateCounter = () => {
+                current += step;
+                if (current < target) {
+                    counter.textContent = Math.floor(current);
+                    requestAnimationFrame(updateCounter);
+                } else {
+                    counter.textContent = target;
+                }
+            };
+
+            updateCounter();
+        });
+    </script>
+</body>
+
+</html>
